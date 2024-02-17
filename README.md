@@ -3,12 +3,14 @@ What our project is: Discord clone
 What our project offers: Our project will offer a messaging system similar to Discord where users can join servers and send and receive text messages both on their servers and between individual users regardless if they share the same server. Server members will be notified when new messages are sent to them directly or posted to their servers.
 
 Basic Functions:
+
 	Login
 	Servers with messaging channels
 	Direct Messaging and friend system
 	Database system to receive information and send information to users
 
 User Requirements:
+
 	Link to "sign-up" page if no login exists
 	Be able to log into user accounts
 	Login page
@@ -39,6 +41,7 @@ User Requirements:
 		Delete messages
 
 Functional Requirements:
+
 	Login/Registration Page: Secure entry points for user authentication and registration, including options for resetting passwords.
 	Display a list of servers the user is part of, with options to join or create new servers.
 	Show channels of the selected server, categorized by text and voice channels, including functionality to create, edit, or delete channels (based on user permissions).
@@ -56,6 +59,7 @@ Functional Requirements:
 	Implement role-based access control for different levels of functionality within servers and channels.
 
 Non-Functional Requirements:
+
 	Must be developed using Java.
 	Implement a database to ensure each user can upload & download the message history for each chat:
 		Database management must use SQL.
