@@ -27,7 +27,7 @@ Our project will offer a messaging system similar to Discord where users can joi
 - Ability to generate invite link
 - Ability to create & delete channels (if admin permissions exist)
 - Changing personal info
--  Public info
+  - Public info
 			Profile pictures
 			Usernames
 			Public roles
