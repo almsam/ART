@@ -28,17 +28,17 @@ Our project will offer a messaging system similar to Discord where users can joi
 - Ability to create & delete channels (if admin permissions exist)
 - Changing personal info
   - Public info
-			Profile pictures
-			Usernames
-			Public roles
-		Private info
-			Name
-			Email
-			Two-Factor Authentication
-	Ability to manage the server (if admin permissions exist)
-		Mute people
-		Ban people
-		Delete messages
+    - Profile pictures
+    - Usernames
+    - Public roles
+  - Private info
+    - Name
+    - Email
+    - Two-Factor Authentication
+  - Ability to manage the server (if admin permissions exist)
+    - Mute people
+    - Ban people
+    - Delete messages
 
 # Functional Requirements:
 	Login/Registration Page: Secure entry points for user authentication and registration, including options for resetting passwords.
