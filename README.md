@@ -1,6 +1,7 @@
-What our project is: Discord clone
+# What our project is: Discord clone
 
-What our project offers: Our project will offer a messaging system similar to Discord where users can join servers and send and receive text messages both on their servers and between individual users regardless if they share the same server. Server members will be notified when new messages are sent to them directly or posted to their servers.
+# What our project offers:
+Our project will offer a messaging system similar to Discord where users can join servers and send and receive text messages both on their servers and between individual users regardless if they share the same server. Server members will be notified when new messages are sent to them directly or posted to their servers.
 
 Basic Functions:
 
