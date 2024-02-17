@@ -11,23 +11,23 @@ Our project will offer a messaging system similar to Discord where users can joi
 - Database system to receive information and send information to users
 
 # User Requirements:
-	Link to "sign-up" page if no login exists
-	Be able to log into user accounts
-	Login page
-	Be able to write and send messages
-	Be able to join servers and send messages within those servers
-	Ability to send and accept friend requests
-	Ability to send files and images
-	Ability to check mutual servers of friends
-	Ability to add a user description
-	React to messages using emojis
-	Create and manage servers, including the users within servers
-	Put an image for a server icon
-	Ability to search for servers, channels, and within chat history.
-	Ability to generate invite link
-	Ability to create & delete channels (if admin permissions exist)
-	Changing personal info
-		Public info
+- Link to "sign-up" page if no login exists
+- Be able to log into user accounts
+- Login page
+- Be able to write and send messages
+- Be able to join servers and send messages within those servers
+- Ability to send and accept friend requests
+- Ability to send files and images
+- Ability to check mutual servers of friends
+- Ability to add a user description
+- React to messages using emojis
+- Create and manage servers, including the users within servers
+- Put an image for a server icon
+- Ability to search for servers, channels, and within chat history.
+- Ability to generate invite link
+- Ability to create & delete channels (if admin permissions exist)
+- Changing personal info
+- - Public info
 			Profile pictures
 			Usernames
 			Public roles
