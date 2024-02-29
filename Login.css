@@ -1,15 +1,13 @@
 body {
     background-color: #2311F0;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start; 
-    height: 100vh;
+  
 }
 
 .container {
     display: flex;
     align-items: flex-start; 
+    margin: 0;
+    justify-content: center;
 }
 
 .heading {
@@ -20,4 +18,51 @@ body {
 .icon {
     width: 40px;
     height: auto;
+}
+
+ h2{
+   margin-left: 5%;
+    color: #ff0f0f;
+
+
+ }
+
+
+ h3{
+
+    margin-left: 10%;
+    color: #ff0f0f;
+    
+ }
+
+ .userfill {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-left: 10%;
+    margin-top: 20px;
+}
+
+
+.passfill {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-left: 10%;
+    margin-top: 20px;
+}
+
+
+
+button {
+    color: #ff0f0f; 
+    background-color: lightgreen; 
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: limegreen; 
 }
