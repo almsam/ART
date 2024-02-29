@@ -1,0 +1,23 @@
+body {
+    background-color: #2311F0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; 
+    height: 100vh;
+}
+
+.container {
+    display: flex;
+    align-items: flex-start; 
+}
+
+.heading {
+    color: #ff0f0f;
+    margin-right: 10px; 
+}
+
+.icon {
+    width: 40px;
+    height: auto;
+}
