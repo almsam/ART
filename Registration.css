@@ -1,0 +1,29 @@
+body{
+    background-color: #c2e3ff;
+}
+
+
+.container {
+    display: flex;
+    align-items: flex-start; 
+    margin: 0;
+    justify-content: center;
+}
+
+.heading {
+    color:#5986f0;
+    margin-right: 10px; 
+}
+
+.icon {
+    width: 40px;
+    height: auto;
+}
+
+h2{
+    margin-left: 5%;
+     color: #25306b;
+ 
+ 
+  }
+ 
