@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Log In</title>
+    <link rel="stylesheet" href="Login.css" />
+    <script>
+      function login() {
+        var username = document.querySelector('input[type="text"]').value;
+        var password = document.querySelector('input[type="password"]').value;
+        if (
+          username === "your_database_username" &&
+          password === "your_database_password"
+        ) {
+          window.location.href = "Main.html";
+        } else {
+          alert("Incorrect username or password");
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <header class="container">
+      <h1 class="heading">ART</h1>
+      <img src="icon.png" alt="redcanvas" class="icon" />
+    </header>
+    <br />
+    <h2>LOG IN</h2>
+    <br />
+    <div class="userfill">
+      <h3>Username</h3>
+      <input type="text" />
+    </div>
+    <div class="passfill">
+      <h3>Password</h3>
+      <input type="password" />
+    </div>
+    <div class="button-container">
+      <button onclick="login()">Log In</button>
+    </div>
+
+    <div class="register">
+      <p>Don't have an account? Sign up by clicking the button to the right</p>
+      <div class="button-container">
+        <button onclick="location.href='Registration.html';">Sign Up</button>
+      </div>
+    </div>
+  </body>
+</html>
