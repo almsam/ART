@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Registration Page</title>
     <link rel="stylesheet" href="Registration.css" />
+    <style>
+      .error {
+        color: red;
+      }
+    </style>
   </head>
   <body>
     <header class="container">
@@ -12,5 +17,71 @@
       <img src="icon.png" alt="redcanvas" class="icon" />
     </header>
     <h2>Registration</h2>
+    <form id="registrationForm" onsubmit="return validateForm()">
+      <div>
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required />
+      </div>
+      <div>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required />
+      </div>
+      <div>
+        <label for="confirmPassword">Confirm Password:</label>
+        <input
+          type="password"
+          id="confirmPassword"
+          name="confirmPassword"
+          required
+        />
+      </div>
+      <div>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required />
+      </div>
+      <div>
+        <label for="dob">Date of Birth:</label>
+        <input type="date" id="dob" name="dob" required />
+      </div>
+      <div>
+        <button type="submit">Register</button>
+      </div>
+    </form>
+
+    <script>
+      function validateForm() {
+        var username = document.getElementById("username").value;
+        var password = document.getElementById("password").value;
+        var confirmPassword = document.getElementById("confirmPassword").value;
+        var email = document.getElementById("email").value;
+        var dob = new Date(document.getElementById("dob").value);
+        var currentDate = new Date();
+
+        var errorMessages = [];
+
+        if (password.length < 7) {
+          errorMessages.push("Password must be at least 7 characters long");
+        }
+
+        if (password !== confirmPassword) {
+          errorMessages.push("Passwords do not match");
+        }
+
+        if (email.indexOf("@") === -1) {
+          errorMessages.push("Invalid email format");
+        }
+
+        if (dob >= currentDate) {
+          errorMessages.push("Date of birth must be in the past");
+        }
+
+        if (errorMessages.length > 0) {
+          alert(errorMessages.join("\n"));
+          return false;
+        }
+
+        return true;
+      }
+    </script>
   </body>
 </html>
