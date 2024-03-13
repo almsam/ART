@@ -1,0 +1,18 @@
+create table User (
+id int AUTO_INCREMENT,
+username varchar(64),
+password varchar(64),
+email varchar (64),
+dateOfBirth Date,
+pronouns varchar(12),
+userDescription varchar(500),
+profilePicture BLOB,
+Primary key (id)
+);
+
+create table Server {
+id int AUTO_INCREMENT,
+name varchar(64),
+serverPicture BLOB,
+Primary key (id)
+};
