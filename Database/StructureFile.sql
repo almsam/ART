@@ -1,3 +1,6 @@
+CREATE DATABASE IF NOT EXISTS ART;
+USE ART;
+
 create table User (
 id int AUTO_INCREMENT,
 username varchar(64),
