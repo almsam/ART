@@ -18,4 +18,21 @@
     <button onclick="sendRequest('unban')">Unban</button>
     <button onclick="sendRequest('editRoles')">Edit User Roles</button>
   </body>
+
+  <script>
+    function submitForm() {
+      // Handle form submission if needed
+    }
+
+    function sendRequest(action) {
+      fetch(`/api/${action}`, {
+        method: 'POST', // Or 'GET' depending on your backend setup
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        // You can pass additional data in the body if needed
+        // body: JSON.stringify({ someData: 'value' })
+      })
+
+  </script>
 </html>
