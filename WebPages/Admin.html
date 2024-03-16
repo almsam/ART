@@ -26,13 +26,26 @@
 
     function sendRequest(action) {
       fetch(`/api/${action}`, {
-        method: 'POST', // Or 'GET' depending on your backend setup
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        // You can pass additional data in the body if needed
+        // You can pass additional here if neccesery
         // body: JSON.stringify({ someData: 'value' })
       })
-
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+        // handle ex if needed
+        console.log(data);
+      })
+      .catch(error => {
+        console.error('There was a problem with your fetch operation:', error);
+      });
+    }
   </script>
 </html>
