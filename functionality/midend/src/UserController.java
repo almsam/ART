@@ -3,11 +3,11 @@
 // import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
-@RequestMapping("/api")
+// @RestController
+// @RequestMapping("/api")
 public class UserController {
 
-    @PostMapping("/mute")
+    // @PostMapping("/mute")
     public String muteUser(@RequestParam("userId") String userId) {
         // Perform actions to mute the user with the given userId
         // For example:
@@ -18,7 +18,7 @@ public class UserController {
         return "User muted successfully";
     }
 
-    @PostMapping("/unmute")
+    // @PostMapping("/unmute")
     public String unmuteUser(@RequestParam("userId") String userId) {
         // Perform actions to unmute the user with the given userId
         // For example:
