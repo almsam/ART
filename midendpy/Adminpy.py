@@ -6,7 +6,7 @@ app = Flask(__name__)
 # Define routes
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("Admin.html")
 
 
 @app.route("/mute", methods=["POST"])
