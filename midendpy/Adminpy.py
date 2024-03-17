@@ -11,37 +11,37 @@ def index():
 
 @app.route("/mute", methods=["POST"])
 def mute_user():
-    # Handle mute user functionality here
+    print("Mute user function executed.")
     return "User muted successfully."
 
 
 @app.route("/unmute", methods=["POST"])
 def unmute_user():
-    # Handle unmute user functionality here
+    print("Unmute user function executed.")
     return "User unmuted successfully."
 
 
 @app.route("/kick", methods=["POST"])
 def kick_user():
-    # Handle kick user functionality here
+    print("Kick user function executed.")
     return "User kicked successfully."
 
 
 @app.route("/ban", methods=["POST"])
 def ban_user():
-    # Handle ban user functionality here
+    print("Ban user function executed.")
     return "User banned successfully."
 
 
 @app.route("/unban", methods=["POST"])
 def unban_user():
-    # Handle unban user functionality here
+    print("Unban user function executed.")
     return "User unbanned successfully."
 
 
 @app.route("/edit_roles", methods=["POST"])
 def edit_user_roles():
-    # Handle edit user roles functionality here
+    print("Edit user roles function executed.")
     return "User roles edited successfully."
 
 
