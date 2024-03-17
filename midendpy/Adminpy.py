@@ -1,11 +1,11 @@
 from flask import Flask, request, render_template
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder="html")
 
 
 # Define routes
 @app.route("/")
-def index():
+def Admin():
     return render_template("Admin.html")
 
 
