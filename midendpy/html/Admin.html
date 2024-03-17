@@ -57,6 +57,13 @@
         $('#editRoles').click(function() {
             sendRequest('/edit_roles');
         });
+
+        $('#submit').click(function() {
+            var username = $('#username').val(); // Get the value from the input field
+            var data = { username: username }; // Create an object to pass as data
+            sendRequest('/process_user', data); // Send the username as data to Flask
+        });
+
     </script>
 </body>
 </html>
