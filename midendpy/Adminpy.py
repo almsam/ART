@@ -45,5 +45,13 @@ def edit_user_roles():
     return "User roles edited successfully."
 
 
+@app.route("/process_user", methods=["POST"])
+def process_user():
+    username = request.form["username"]  # Get the username from the form data
+    print("Received username:", username)  # Print the received username
+    # Perform any processing with the username here
+    return "Received username: " + username
+
+
 if __name__ == "__main__":
     app.run(debug=True)
