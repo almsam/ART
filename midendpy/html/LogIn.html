@@ -4,7 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Log In</title>
-    <link rel="stylesheet" href="Login.css" />
+    <link rel="stylesheet" href="/static/Login.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
       function login() {
         var username = document.querySelector('input[type="text"]').value;
@@ -30,14 +31,14 @@
     <br />
     <div class="userfill">
       <h3>Username</h3>
-      <input type="text" />
+      <input type="text" id="username" />
     </div>
     <div class="passfill">
       <h3>Password</h3>
-      <input type="password" />
+      <input type="password" id="password" />
     </div>
     <div class="button-container">
-      <button onclick="login()">Log In</button>
+      <button id="submit">Log In</button>
     </div>
 
     <div class="register">
