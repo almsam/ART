@@ -1,4 +1,3 @@
-CREATE DATABASE IF NOT EXISTS ART;
 USE ART;
 
 create table User (
@@ -13,7 +12,7 @@ profilePicture BLOB,
 Primary key (id)
 );
 
-create table Server (
+create table Servers (
 id int AUTO_INCREMENT,
 name varchar(64),
 serverPicture BLOB,
@@ -24,7 +23,7 @@ create table Channel (
 id int AUTO_INCREMENT,
 serverId int,
 name varchar(64),
-Foreign key (serverId) references Server(id),
+Foreign key (serverId) references Servers(id),
 Primary key (id, serverId)
 );
 
@@ -36,11 +35,11 @@ foreign key (friendId) references User(id),
 primary key (userId,friendId)
 );
 
-create table Admin (
+create table Admins (
 userId int,
 serverId int,
 foreign key (userId) references User(id),
-foreign key (serverId) references Server(id),
+foreign key (serverId) references Servers(id),
 primary key (userId,serverId)
 );
 
@@ -48,6 +47,6 @@ create table ServerMember (
 userId int,
 serverId int,
 foreign key (userId) references User(id),
-foreign key (serverId) references Server(id),
+foreign key (serverId) references Servers(id),
 primary key (userId,serverId)
 );
