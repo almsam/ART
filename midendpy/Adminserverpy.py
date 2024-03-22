@@ -7,7 +7,7 @@ serverName = ""
 
 # Define routes
 @app.route("/")
-def Admin():
+def Admin_Server():
     return render_template("Admin_Server.html")
 
 
