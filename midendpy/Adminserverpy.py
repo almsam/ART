@@ -23,32 +23,32 @@ def CreateChannel():
 
 @app.route("/DeleteChannel", methods=["POST"])
 def DeleteChannel():
-    print("Unmute user function executed.")
-    return "User unmuted successfully."
+    if channelName == "":
+        print("Please Name the target Channel " + channelName)
+        return "Please Name the target Channel " + channelName
+    else:
+        print("Deleted Channel " + channelName)
+        return "Deleted Channel " + channelName
 
 
-@app.route("/kick", methods=["POST"])
-def kick_user():
-    print("Kick user function executed.")
-    return "User kicked successfully."
+@app.route("/CreateServer", methods=["POST"])
+def CreateServer():
+    if serverName == "":
+        print("Please Name the Server " + serverName)
+        return "Please Name the Server " + serverName
+    else:
+        print("Created Server " + serverName)
+        return "Created Server " + serverName
 
 
-@app.route("/ban", methods=["POST"])
-def ban_user():
-    print("Ban user function executed.")
-    return "User banned successfully."
-
-
-@app.route("/unban", methods=["POST"])
-def unban_user():
-    print("Unban user function executed.")
-    return "User unbanned successfully."
-
-
-@app.route("/edit_roles", methods=["POST"])
-def edit_user_roles():
-    print("Edit user roles function executed.")
-    return "User roles edited successfully."
+@app.route("/DeleteServer", methods=["POST"])
+def DeleteServer():
+    if serverName == "":
+        print("Please Name the target Server " + serverName)
+        return "Please Name the target Server " + serverName
+    else:
+        print("Deleted Server " + serverName)
+        return "Deleted Server " + serverName
 
 
 @app.route("/process_user", methods=["POST"])
