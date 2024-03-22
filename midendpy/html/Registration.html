@@ -49,5 +49,28 @@
       </div>
     </form>
 
+    <script>
+      $('#submit').click(function() {
+        var username = $('#username').val();
+        var password = $('#password').val();
+        var password = $('#confirmPassword').val();
+        var password = $('#email').val();
+        var password = $('#dob').val();
+        var data = { 'username': username, 'password': password, 'confirmPassword': confirmPassword, 'email': email, 'dob': dob};
+        $.ajax({
+            url: '/login',
+            type: 'POST',
+            data: data,
+            success: function(response) {
+                alert(response);
+                // Redirect or handle response as needed
+            },
+            error: function(xhr, status, error) {
+                console.error(xhr.responseText);
+                // Handle error as needed
+            }
+        });
+    });
+    </script>
   </body>
 </html>
