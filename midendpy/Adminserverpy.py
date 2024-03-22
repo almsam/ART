@@ -1,23 +1,28 @@
 from flask import Flask, request, render_template
 
 app = Flask(__name__, template_folder="html")
-username = ""
+channelName = ""
+serverName = ""
 
 
 # Define routes
 @app.route("/")
 def Admin():
-    return render_template("Admin.html")
+    return render_template("Admin_Server.html")
 
 
-@app.route("/mute", methods=["POST"])
-def mute_user():
-    print("Muted " + username)
-    return "Muted " + username
+@app.route("/CreateChannel", methods=["POST"])
+def CreateChannel():
+    if channelName == "":
+        print("Please Name the Channel " + channelName)
+        return "Please Name the Channel " + channelName
+    else:
+        print("Created Channel " + channelName)
+        return "Created Channel " + channelName
 
 
-@app.route("/unmute", methods=["POST"])
-def unmute_user():
+@app.route("/DeleteChannel", methods=["POST"])
+def DeleteChannel():
     print("Unmute user function executed.")
     return "User unmuted successfully."
 
