@@ -47,5 +47,33 @@
         <button onclick="location.href='Registration.html';">Sign Up</button>
       </div>
     </div>
+
+    <script>
+      // AJAX requests
+
+      function sendRequest(url, dataA, dataB) {
+          $.ajax({
+              url: url,
+              type: 'POST',
+              dataA: dataA,
+              dataB: dataB,
+              success: function(response) {
+                  alert(response);
+              },
+              error: function(xhr, status, error) {
+                  console.error(xhr.responseText);
+              }
+          });
+      }
+
+      $('#submit').click(function() {
+          var username = $('#username').val(); // Get the value from the input field
+          var dataA = { 'username': username }; // Correct the key name to 'username'
+          var password = $('#password').val();
+          var dataB = { 'password': password };
+          sendRequest('/process_user', dataA, dataB); // Send the username as data to Flask
+      });
+
+  </script>
   </body>
 </html>
