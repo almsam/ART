@@ -49,31 +49,24 @@
     </div>
 
     <script>
-      // AJAX requests
-
-      function sendRequest(url, dataA, dataB) {
+      $('#submit').click(function() {
+          var username = $('#username').val();
+          var password = $('#password').val();
+          var data = { 'username': username, 'password': password };
           $.ajax({
-              url: url,
+              url: '/login',
               type: 'POST',
-              dataA: dataA,
-              dataB: dataB,
+              data: data,
               success: function(response) {
                   alert(response);
+                  // Redirect or handle response as needed
               },
               error: function(xhr, status, error) {
                   console.error(xhr.responseText);
+                  // Handle error as needed
               }
           });
-      }
-
-      $('#submit').click(function() {
-          var username = $('#username').val(); // Get the value from the input field
-          var dataA = { 'username': username }; // Correct the key name to 'username'
-          var password = $('#password').val();
-          var dataB = { 'password': password };
-          sendRequest('/process_user', dataA, dataB); // Send the username as data to Flask
       });
-
   </script>
   </body>
 </html>
