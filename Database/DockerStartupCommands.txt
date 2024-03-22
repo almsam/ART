@@ -1,0 +1,9 @@
+docker-compose up //start docker
+docker exec -it ART-mysql bash //connect to sql
+mysql -u ART -p //connect to database
+password is ARTpw
+docker-compose down //end docker
+
+show databases
+use dbname
+show tables
