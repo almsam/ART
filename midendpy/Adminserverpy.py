@@ -51,19 +51,19 @@ def DeleteServer():
         return "Deleted Server " + serverName
 
 
-@app.route("/process_cname", methods=["POST"])
+@app.route("/subChannelName", methods=["POST"])
 def process_cname():
     global channelName
-    channelName = request.form["channelName"]  # Get the username from the form data
+    channelName = request.form["ChannelName"]  # Get the username from the form data
     print("Received channel Name:", channelName)  # Print the received username
     # Perform any processing with the username here
     return "Received channel Name: " + channelName
 
 
-@app.route("/process_sname", methods=["POST"])
+@app.route("/subChannelName", methods=["POST"])
 def process_sname():
     global serverName
-    serverName = request.form["serverName"]  # Get the username from the form data
+    serverName = request.form["ServerName"]  # Get the username from the form data
     print("Received channel Name:", serverName)  # Print the received username
     # Perform any processing with the username here
     return "Received channel Name: " + serverName

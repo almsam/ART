@@ -65,13 +65,13 @@
     $('#subChannelName').click(function() {
         var ChannelName = $('#ChannelName').val(); // Get the value from the input field
         var dataA = { 'ChannelName': ChannelName }; // Correct the key name to 'username'
-        sendRequest('/processChannelName', dataA); // Send the username as data to Flask
+        sendRequest('/subChannelName', dataA); // Send the username as data to Flask
     });
 
     $('#subServerName').click(function() {
       var ServerName = $('#ServerName').val(); // Get the value from the input field
       var dataB = { 'ServerName': ServerName }; // Correct the key name to 'username'
-      sendRequest('/processChannelName', dataB); // Send the username as data to Flask
+      sendRequest('/subServerName', dataB); // Send the username as data to Flask
     });
 
 
