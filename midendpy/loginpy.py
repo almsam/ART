@@ -32,8 +32,8 @@ def login():
         # print(render_template("admin.html"))
         # app.pageAdmin()
         invoke_pageAdmin()
-        return render_template("admin.html")
-        # return redirect(url_for("admin.admin_page"))
+        # return render_template("admin.html")
+        return ""  # redirect(url_for("admin.admin_page"))
     else:
         # Return some response for unsuccessful login
         return "Login failed. Please try again."
