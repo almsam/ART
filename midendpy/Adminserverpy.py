@@ -1,73 +1,60 @@
-from flask import Flask, request, render_template
+from flask import Blueprint, request, render_template
 
-app = Flask(__name__, template_folder="html")
+admin_server_bp = Blueprint("admin_server", __name__)
+
 channelName = ""
 serverName = ""
 
 
 # Define routes
-@app.route("/")
-def Admin_Server():
+@admin_server_bp.route("/")
+def admin_server_page():
     return render_template("Admin_Server.html")
 
 
-@app.route("/CreateChannel", methods=["POST"])
-def CreateChannel():
-    if channelName == "":
-        print("Please Name the Channel " + channelName)
-        return "Please Name the Channel " + channelName
-    else:
-        print("Created Channel " + channelName)
-        return "Created Channel " + channelName
-
-
-@app.route("/DeleteChannel", methods=["POST"])
-def DeleteChannel():
-    if channelName == "":
-        print("Please Name the target Channel " + channelName)
-        return "Please Name the target Channel " + channelName
-    else:
-        print("Deleted Channel " + channelName)
-        return "Deleted Channel " + channelName
-
-
-@app.route("/CreateServer", methods=["POST"])
-def CreateServer():
-    if serverName == "":
-        print("Please Name the Server " + serverName)
-        return "Please Name the Server " + serverName
-    else:
-        print("Created Server " + serverName)
-        return "Created Server " + serverName
-
-
-@app.route("/DeleteServer", methods=["POST"])
-def DeleteServer():
-    if serverName == "":
-        print("Please Name the target Server " + serverName)
-        return "Please Name the target Server " + serverName
-    else:
-        print("Deleted Server " + serverName)
-        return "Deleted Server " + serverName
-
-
-@app.route("/subChannelName", methods=["POST"])
-def process_cname():
+@admin_server_bp.route("/CreateChannel", methods=["POST"])
+def create_channel():
     global channelName
-    channelName = request.form["ChannelName"]  # Get the username from the form data
-    print("Received channel Name:", channelName)  # Print the received username
-    # Perform any processing with the username here
-    return "Received channel Name: " + channelName
+    channelName = request.form.get("ChannelName")
+    if not channelName:
+        print("Please name the channel.")
+        return "Please name the channel."
+    else:
+        print("Created Channel: ", channelName)
+        return "Created Channel: " + channelName
 
 
-@app.route("/subChannelName", methods=["POST"])
-def process_sname():
+@admin_server_bp.route("/DeleteChannel", methods=["POST"])
+def delete_channel():
+    global channelName
+    channelName = request.form.get("ChannelName")
+    if not channelName:
+        print("Please name the target channel.")
+        return "Please name the target channel."
+    else:
+        print("Deleted Channel: ", channelName)
+        return "Deleted Channel: " + channelName
+
+
+@admin_server_bp.route("/CreateServer", methods=["POST"])
+def create_server():
     global serverName
-    serverName = request.form["ServerName"]  # Get the username from the form data
-    print("Received channel Name:", serverName)  # Print the received username
-    # Perform any processing with the username here
-    return "Received channel Name: " + serverName
+    serverName = request.form.get("ServerName")
+    if not serverName:
+        print("Please name the server.")
+        return "Please name the server."
+    else:
+        print("Created Server: ", serverName)
+        return "Created Server: " + serverName
 
 
-if __name__ == "__main__":
-    app.run(debug=True)
+@admin_server_bp.route("/DeleteServer", methods=["POST"])
+def delete_server():
+    global serverName
+    serverName = request.form.get("ServerName")
+    if not serverName:
+        print("Please name the target server.")
+        return "Please name the target server."
+    else:
+        print("Deleted Server: ", serverName)
+        return "Deleted Server: " + serverName
