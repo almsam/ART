@@ -47,13 +47,21 @@ def login():
     print("attempting to authenticate:")
 
     if len(username) > 8:
+        global a
         a = True
     if password == confirmPassword:
+        global b
         b = True
     email_regex = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
     if re.match(email_regex, email):
+        global c
         c = True
-    if int(dob[:4]) < 2005:
+
+    year = 9999
+    if len(dob) >= 4:
+        year = int(dob[:4])
+    if year < 2005:
+        global d
         d = True
 
     if a == False:
@@ -69,7 +77,7 @@ def login():
         print("You must be >18:", dob)
         return "you must be >18: " + dob
     else:
-        print("sign up success")
+        print("sign up success ", a, " ", b, " ", c, " ", d)
         return (
             "login success, Received username: "
             + username
