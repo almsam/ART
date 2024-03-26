@@ -8,6 +8,7 @@ username = ""
 # Define routes
 @admin_bp.route("/")
 def admin_page():
+    render_template("Admin.html")
     return render_template("Admin.html")
 
 
