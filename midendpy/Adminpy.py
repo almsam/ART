@@ -16,7 +16,8 @@ def mute_user():
     global username
     username = request.form.get("username")
     if not username:
-        return "Please provide a username."
+        print("username: ", username)
+        return "Please provide a username. "
     else:
         print("Muted ", username)
         return "Muted " + username
