@@ -7,7 +7,7 @@ serverName = ""
 
 
 # Define routes
-@admin_server_bp.route("/")
+@admin_server_bp.route("/admin_server")
 def admin_server_page():
     return render_template("Admin_Server.html")
 
