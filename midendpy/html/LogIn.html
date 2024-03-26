@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Log In</title>
+    <link rel="stylesheet" href="/static/Login.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      function login() {
+        var username = document.querySelector('input[type="text"]').value;
+        var password = document.querySelector('input[type="password"]').value;
+        if (
+          username === "your_database_username" &&
+          password === "your_database_password"
+        ) {
+          window.location.href = "Main.html";
+        } else {
+          alert("Incorrect username or password");
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <header class="container">
+      <h1 class="heading">ART</h1>
+      <img src="..\Images\icon.png" alt="redcanvas" class="icon" />
+    </header>
+    <br />
+    <h2>LOG IN</h2>
+    <br />
+    <div class="userfill">
+      <h3>Username</h3>
+      <input type="text" id="username" />
+    </div>
+    <div class="passfill">
+      <h3>Password</h3>
+      <input type="password" id="password" />
+    </div>
+    <div class="button-container">
+      <button id="submit">Log In</button>
+    </div>
+
+    <div class="register">
+      <p>Don't have an account? Sign up by clicking the button to the right</p>
+      <div class="button-container">
+        <button onclick="location.href='Registration.html';">Sign Up</button>
+      </div>
+    </div>
+
+    <script>
+      $('#submit').click(function() {
+          var username = $('#username').val();
+          var password = $('#password').val();
+          var data = { 'username': username, 'password': password };
+          $.ajax({
+              url: '/login',
+              type: 'POST',
+              data: data,
+              success: function(response) {
+                  alert(response);
+                  // Redirect or handle response as needed
+              },
+              error: function(xhr, status, error) {
+                  console.error(xhr.responseText);
+                  // Handle error as needed
+              }
+          });
+      });
+  </script>
+  </body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Server</title>
+    <link rel="stylesheet" href="/static/Adminserver.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  </head>
+  <header><h1>Admin Server Page</h1></header>
+  <body>
+    <input type="text" id="ChannelName"> <button id="subChannelName">Submit Channel Name</button>
+    <button id="CreateChannel">Create Channel</button>
+    <button id="DeleteChannel">Delete Channel</button>
+    <input type="text" id="ServerName"> <button id="subServerName">Submit Server Name</button>
+    <button id="CreateServer">Create Server</button>
+    <button id="DeleteServer">Delete Server</button>
+
+    <script>
+      // AJAX requests
+      function sendRequest(url) {
+          $.ajax({
+              url: url,
+              type: 'POST',
+              success: function(response) {
+                  alert(response);
+              },
+              error: function(xhr, status, error) {
+                  console.error(xhr.responseText);
+              }
+          });
+      }
+
+      function sendRequest(url, data) {
+          $.ajax({
+              url: url,
+              type: 'POST',
+              data: data,
+              success: function(response) {
+                  alert(response);
+              },
+              error: function(xhr, status, error) {
+                  console.error(xhr.responseText);
+              }
+          });
+      }
+
+      
+    $('#CreateChannel').click(function() {
+        sendRequest('/CreateChannel');
+    });
+
+    $('#DeleteChannel').click(function() {
+        sendRequest('/DeleteChannel');
+    });
+
+    $('#CreateServer').click(function() {
+        sendRequest('/CreateServer');
+    });
+
+    $('#DeleteServer').click(function() {
+        sendRequest('/DeleteServer');
+    });
+
+    $('#subChannelName').click(function() {
+        var ChannelName = $('#ChannelName').val(); // Get the value from the input field
+        var dataA = { 'ChannelName': ChannelName }; // Correct the key name to 'username'
+        sendRequest('/subChannelName', dataA); // Send the username as data to Flask
+    });
+
+    $('#subServerName').click(function() {
+      var ServerName = $('#ServerName').val(); // Get the value from the input field
+      var dataB = { 'ServerName': ServerName }; // Correct the key name to 'username'
+      sendRequest('/subServerName', dataB); // Send the username as data to Flask
+    });
+
+
+  </script>
+
+  </body>
+</html>
