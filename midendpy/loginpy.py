@@ -1,28 +1,24 @@
-from flask import Flask, request, render_template
+from flask import Blueprint, request, render_template
 
-app = Flask(__name__, template_folder="html")
-username = ""
-password = ""
+login_bp = Blueprint("login", __name__)
 
 
 # Define routes
-@app.route("/")
-def Admin():
+@login_bp.route("/")
+def login_page():
     return render_template("LogIn.html")
 
 
-@app.route("/process_user", methods=["POST"])
+@login_bp.route("/process_user", methods=["POST"])
 def process_user():
-    global username
-    username = request.form["username"]  # Get the username from the form data
-    global password
+    username = request.form["username"]
     password = request.form["password"]
-    print("Received username: ", username, password)  # Print the received username
+    print("Received username: ", username, password)
     # Perform any processing with the username here
     return "Received username: " + username + password
 
 
-@app.route("/login", methods=["POST"])
+@login_bp.route("/login", methods=["POST"])
 def login():
     username = request.form["username"]
     password = request.form["password"]
@@ -30,7 +26,3 @@ def login():
     print("Password:", password)
     # Perform authentication logic here
     return "Received username: " + username + ", password: " + password
-
-
-if __name__ == "__main__":
-    app.run(debug=True)
