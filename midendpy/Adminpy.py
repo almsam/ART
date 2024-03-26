@@ -6,7 +6,7 @@ username = ""
 
 
 # Define routes
-@admin_bp.route("/")
+@admin_bp.route("/admin")
 def admin_page():
     render_template("Admin.html")
     return render_template("Admin.html")
