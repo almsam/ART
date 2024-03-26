@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Registration Page</title>
-    <link rel="stylesheet" href="Registration.css" />
+    <link rel="stylesheet" href="/static/Registration.css" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
       .error {
@@ -53,12 +53,12 @@
       $('#submit').click(function() {
         var username = $('#username').val();
         var password = $('#password').val();
-        var password = $('#confirmPassword').val();
-        var password = $('#email').val();
-        var password = $('#dob').val();
+        var confirmPassword = $('#confirmPassword').val();
+        var email = $('#email').val();
+        var dob = $('#dob').val();
         var data = { 'username': username, 'password': password, 'confirmPassword': confirmPassword, 'email': email, 'dob': dob};
         $.ajax({
-            url: '/login',
+            url: '/signup',
             type: 'POST',
             data: data,
             success: function(response) {
@@ -71,6 +71,17 @@
             }
         });
     });
+
+    //$('#submit').click(function() {
+      //var username = $('#username').val(); // Get the value from the input field
+      //var password = $('#password').val();
+      //var confirmPassword= $('#confirmPassword').val();
+      //var email = $('#email').val();
+      //var dob = $('#dob').val();
+      //var data = { 'username': username }; // Correct the key name to 'username'
+      //sendRequest('/process_user', data); // Send the username as data to Flask
+  //});
+  
     </script>
   </body>
 </html>
