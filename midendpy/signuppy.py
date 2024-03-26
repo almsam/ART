@@ -5,7 +5,7 @@ signup_bp = Blueprint("signup", __name__)
 
 
 # Define routes
-@signup_bp.route("/")
+@signup_bp.route("/signup")
 def signup_page():
     return render_template("Registration.html")
 
