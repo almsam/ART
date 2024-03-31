@@ -16,6 +16,7 @@ admin_bp = Blueprint("admin", __name__)
 login_bp = Blueprint("login", __name__)
 signup_bp = Blueprint("signup", __name__)
 admin_server_bp = Blueprint("admin_server", __name__)
+index_bp = Blueprint("index", __name__)
 
 
 # admin_page(); signup_page(); admin_server_page(); login_page()
@@ -34,10 +35,16 @@ def goto_page(page):
         return render_template("SignUp.html")
     elif page == "Admin":
         return render_template("Admin.html")
+    elif page == "Index":
+        return render_template("Index.html")
     # Add more conditions for other pages as needed
     else:
         return "Page not found"
 
+
+@index_bp.route("/index")
+def index_page():
+    return render_template("Index.html")
 
 # Routes and functionalities for admin module
 @admin_bp.route("/admin")
@@ -114,11 +121,9 @@ def login():
     print("Password:", password)
     if authenticate(request.form["username"], request.form["password"]):
         # admin_page()
-        print("render time")
-        # return render_template("Admin.html")
-        return redirect(url_for("admin.admin_page"))
+        return redirect(url_for("index.index_page"))
     else:
-        return "Login failed. Please try again."
+        return render_template("LogInFail.html")
 
 
 def authenticate(UN, PW):
@@ -135,7 +140,7 @@ def invoke_pageAdmin():
 
 
 # Routes and functionalities for signup module
-@signup_bp.route("/signup")
+@signup_bp.route("/register", methods=["POST"])
 def signup_page():
     return render_template("Registration.html")
 
@@ -243,6 +248,7 @@ app.register_blueprint(admin_bp)
 app.register_blueprint(login_bp)
 app.register_blueprint(signup_bp)
 app.register_blueprint(admin_server_bp)
+app.register_blueprint(index_bp)
 
 if __name__ == "__main__":
     app.run(debug=True)
