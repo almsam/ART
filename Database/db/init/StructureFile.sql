@@ -1,3 +1,5 @@
+ALTER USER 'ART' IDENTIFIED WITH mysql_native_password BY 'ARTpw';
+
 USE ART;
 
 create table User (
@@ -49,4 +51,13 @@ serverId int,
 foreign key (userId) references User(id),
 foreign key (serverId) references Servers(id),
 primary key (userId,serverId)
+);
+
+create table Message (
+messageTime DateTime,
+channelId int,
+serverId int,
+foreign key (channelId) references Channel(id),
+foreign key (serverId) references Servers(id),
+primary key (messageTime,channelId,serverId)
 );
