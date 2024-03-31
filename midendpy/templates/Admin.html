@@ -1,0 +1,81 @@
+{% extends 'Base.html' %}
+
+{% block head %}
+<title>Admin</title>
+<link rel="stylesheet" href="../static/css/Admin.css">
+{% endblock %}
+
+{% block header %}
+<h1>Admin User Page</h1>
+<input type="text" id="username"> <button id="submit">Submit</button>
+{% endblock %}
+
+{% block body %}
+<button id="mute">Mute User</button>
+<button id="unmute">Unmute User</button>
+<button id="kick">Kick</button>
+<button id="ban">Ban</button>
+<button id="unban">Unban</button>
+<button id="editRoles">Edit User Roles</button>
+
+<script>
+    // AJAX requests
+    function sendRequest(url) {
+        $.ajax({
+            url: url,
+            type: 'POST',
+            success: function(response) {
+                alert(response);
+            },
+            error: function(xhr, status, error) {
+                console.error(xhr.responseText);
+            }
+        });
+    }
+
+    function sendRequest(url, data) {
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: data,
+            success: function(response) {
+                alert(response);
+            },
+            error: function(xhr, status, error) {
+                console.error(xhr.responseText);
+            }
+        });
+    }
+
+    $('#mute').click(function() {
+        sendRequest('/mute');
+    });
+
+    $('#unmute').click(function() {
+        sendRequest('/unmute');
+    });
+
+    $('#kick').click(function() {
+        sendRequest('/kick');
+    });
+
+    $('#ban').click(function() {
+        sendRequest('/ban');
+    });
+
+    $('#unban').click(function() {
+        sendRequest('/unban');
+    });
+
+    $('#editRoles').click(function() {
+        sendRequest('/edit_roles');
+    });
+
+    $('#submit').click(function() {
+        var username = $('#username').val(); // Get the value from the input field
+        var data = { 'username': username }; // Correct the key name to 'username'
+        sendRequest('/process_user', data); // Send the username as data to Flask
+    });
+
+</script>
+{% endblock %}
