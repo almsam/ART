@@ -9,7 +9,7 @@ from flask import (
 )
 import re
 
-app = Flask(__name__, template_folder="HTML")
+app = Flask(__name__)
 
 # Blueprint definitions
 admin_bp = Blueprint("admin", __name__)
