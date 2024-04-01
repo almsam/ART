@@ -16,6 +16,10 @@ class TestApp(unittest.TestCase):
         self.app = app.test_client()
         self.app.testing = True
 
+    def test_login_route(self):
+        response = self.app.get("/")
+        self.assertEqual(response.status_code, 200)  
+    
     def test_admin_route(self):
         response = self.app.get("/admin")
         self.assertEqual(response.status_code, 200)
