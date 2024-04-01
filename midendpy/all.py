@@ -54,12 +54,9 @@ def admin_page():
 
 @admin_bp.route("/mute", methods=["POST"])
 def mute_user():
-    username = request.form.get("username")
-    if not username:
-        return "Please provide a username."
-    else:
-        print("Muted ", username)
-        return "Muted " + username
+    print("Mute user function executed.")
+    return "User muted successfully."
+
 
 
 @admin_bp.route("/unmute", methods=["POST"])

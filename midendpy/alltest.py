@@ -1,5 +1,13 @@
 import unittest
-from app import app
+from flask import Flask, render_template, redirect, url_for, Blueprint
+from all import admin_bp, admin_server_bp, login_bp, signup_bp, index_bp
+
+app = Flask(__name__, template_folder="templates")
+app.register_blueprint(login_bp)
+app.register_blueprint(signup_bp)
+app.register_blueprint(admin_bp)
+app.register_blueprint(admin_server_bp)
+app.register_blueprint(index_bp)
 
 
 class TestApp(unittest.TestCase):
