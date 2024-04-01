@@ -11,4 +11,4 @@ jobs:
         with:
           project: "COSC 310 Project: ART"
           column: "Sprint Backlog"
-          repo-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          repo-token: ART
