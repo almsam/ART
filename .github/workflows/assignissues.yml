@@ -11,4 +11,4 @@ jobs:
         with:
           project: COSC 310 Project ART
           column: In Progress
-          repo-token: ART
+          repo-token: ${{ secrets.ART}}
