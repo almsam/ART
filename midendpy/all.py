@@ -116,7 +116,7 @@ def login():
     password = request.form["password"]
     print("Username:", username)
     print("Password:", password)
-    if authenticate(request.form["username"], request.form["password"]):
+    if authenticate(username, password):
         # admin_page()
         return redirect(url_for("index.index_page"))
     else:
