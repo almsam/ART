@@ -9,6 +9,6 @@ jobs:
     steps:
       - uses: alex-page/github-project-automation-plus@v0.8.3
         with:
-          project: "COSC 310 Project: ART"
-          column: "In Progress"
+          project: COSC 310 Project: ART
+          column: In Progress
           repo-token: ART
