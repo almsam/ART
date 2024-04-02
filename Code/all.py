@@ -127,8 +127,9 @@ def login():
 
 
 def authenticate(UN, PW):
-    if UN == "ss":
-        if PW == "ss":
+    (username, password) = Connector.getUsernameAndPassword(UN, PW)
+    if UN is not None and PW is not None:
+        if UN == username and PW == password:
             return True
     return False
 
@@ -164,33 +165,25 @@ def signup():
         dob,
     )
     print("attempting to authenticate:")
-    errors = []
-    if len(username) <= 8:
-        errors.append("Username too short: " + username)
-    if password != confirmPassword:
-        errors.append("Passwords don't match: " + password + ", " + confirmPassword)
+    #errors = []
+    #if len(username) <= 8:
+    #    errors.append("Username too short: " + username)
+    #if password != confirmPassword:
+    #    errors.append("Passwords don't match: " + password + ", " + confirmPassword)
     email_regex = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-    if not re.match(email_regex, email):
-        errors.append("Invalid email: " + email)
+    #if not re.match(email_regex, email):
+    #    errors.append("Invalid email: " + email)
     year = int(dob[:4]) if len(dob) >= 4 else 9999
-    if year >= 2005:
-        errors.append("You must be <=18: " + dob)
-    if errors:
-        return "\n".join(errors)
+    #if year >= 2005:
+    #    errors.append("You must be >=18: " + dob)
+    #if errors:
+    if len(username) <= 8 or password != confirmPassword or not re.match(email_regex, email) or year >= 2005:
+        #return "\n".join(errors)
+        return render_template("RegistrationFail.html")
     else:
         print("Sign up success")
-        return (
-            "Sign up success, Received username: "
-            + username
-            + " password: "
-            + password
-            + " cp: "
-            + confirmPassword
-            + " email: "
-            + email
-            + " dob: "
-            + dob
-        )
+        Connector.createUser(username, password, email, dob)
+        return render_template("RegistrationSuccess.html")
 
 
 # Routes and functionalities for admin_server module

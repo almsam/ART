@@ -29,6 +29,27 @@ class databaseHandler:
         finally:
             self.ARTdb.close()
 
+    def getUsernameAndPassword(self, UN, PW):
+        username = None
+        password = None
+
+        try:
+            self.openDatabaseConnection()
+            cursor = self.ARTdb.cursor()
+            query = "SELECT username, password from User WHERE username = %s AND password = %s"
+            cursor.execute(query, (UN, PW))
+
+            for c in cursor:
+                username = c[0]
+                password = c[1]
+
+            cursor.close()
+        except mysql.connector.Error as err:
+            print(err)
+        finally:
+            self.ARTdb.close()
+            return username, password
+
     def createUser(self, name, password, email, dob):   #registers a user to the database
         try:
             self.openDatabaseConnection()
@@ -61,6 +82,6 @@ class databaseHandler:
     
     #def convertDOB(self): idk if I need this yet
 
-Connector = databaseHandler()
-Connector.createUser("test", "test", "email@can.ca", "2001-09-01")
-Connector.getUsers()
+#Connector = databaseHandler()
+#Connector.createUser("test", "test", "email@can.ca", "2001-09-01")
+#Connector.getUsers()
