@@ -1,0 +1,41 @@
+{% extends 'Base.html' %}
+
+{% block head %}
+<title>Log In</title>
+<link rel="stylesheet" href="../static/css/Login.css">
+{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block body %}
+<header class="container">
+  <h1 class="heading">ART</h1>
+  <img src="../Images/icon.png" alt="redcanvas" class="icon" />
+</header>
+<br />
+<h2>LOG IN</h2>
+{% block fail %}{% endblock %}
+<br />
+<form action="/login" method="POST">
+  <div class="userfill">
+    <h3>Username</h3>
+    <input type="text" name = "username" id="username" />
+  </div>
+  <div class="passfill">
+    <h3>Password</h3>
+    <input type="password" name = "password" id="password" />
+  </div>
+  <div class="button-container">
+    <button id="submit">Log In</button>
+  </div>
+</form>
+
+<div class="register">
+  <p>Don't have an account? Sign up by clicking the button to the right</p>
+  <div class="button-container">
+    <form action="/register" method="POST">
+     <button id="register">Sign Up</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
