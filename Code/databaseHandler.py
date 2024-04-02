@@ -10,6 +10,7 @@ class databaseHandler:
         password="ARTpw",                   #Password to access database
         database='ART',                     #Database name
         ssl_disabled='True',
+        port=3307
         )
 
     def getUsers(self): #temporary, prints all users and all info from users
