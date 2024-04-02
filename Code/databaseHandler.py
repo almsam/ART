@@ -1,7 +1,7 @@
 import mysql.connector #must download in pip
 
 class databaseHandler:
-    ARTdb = None;
+    ARTdb = None
 
     def openDatabaseConnection(self):   #opens db connection
         self.ARTdb = mysql.connector.connect(    #building connection to database

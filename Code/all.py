@@ -8,7 +8,7 @@ from flask import (
     current_app,
 )
 import re
-import databaseHandler
+from databaseHandler import databaseHandler
 
 Connector = databaseHandler()
 
