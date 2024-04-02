@@ -60,6 +60,6 @@ class databaseHandler:
     
     #def convertDOB(self): idk if I need this yet
 
-Connector = databaseHandlerTemplate()
+Connector = databaseHandler()
 Connector.createUser("test", "test", "email@can.ca", "2001-09-01")
-Connector.selectTemplate()
+Connector.getUsers()
