@@ -1,0 +1,20 @@
+version: '3.8'
+services:             
+    db:
+        image: mysql:latest
+        container_name: ART-mysql
+        restart: always
+        environment:
+            MYSQL_DATABASE: 'ART'
+            MYSQL_USER: 'ART'
+            MYSQL_PASSWORD: 'ARTpw'            
+            MYSQL_ROOT_PASSWORD: 'ARTrpw'
+        ports:
+            - '3306:3306'
+        expose:
+            - '3306'   
+        volumes:
+            - mysql-db:/var/lib/mysql
+            - ./db/init:/docker-entrypoint-initdb.d
+volumes:
+    mysql-db:
