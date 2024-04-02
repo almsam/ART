@@ -8,9 +8,9 @@ from flask import (
     current_app,
 )
 import re
-from databaseHandler import databaseHandler
+import databaseHandler
 
-databaseHandler.openDatabaseConnection(self)
+Connector = databaseHandler()
 
 app = Flask(__name__)
 
