@@ -53,10 +53,22 @@ foreign key (serverId) references Servers(id),
 primary key (userId,serverId)
 );
 
+create table ChannelMember (
+userId int,
+serverId int,
+channelId int,
+foreign key (userId) references User(id),
+foreign key (serverId) references Channel(serverId),
+foreign key (channelId) references Channel(id),
+primary key (userId,serverId)
+);
+
 create table Message (
+userId int,
 messageTime DateTime,
 channelId int,
 serverId int,
+foreign key (userId) references User(id),
 foreign key (channelId) references Channel(id),
 foreign key (serverId) references Servers(id),
 primary key (messageTime,channelId,serverId)
