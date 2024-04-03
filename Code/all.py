@@ -127,10 +127,7 @@ def login():
 
 
 def authenticate(UN, PW):
-    if (Connector.validateUser(UN,PW)):
-        return True
-    else:
-        return False
+    return Connector.validateUser(UN,PW)
 
 
 def invoke_pageAdmin():
