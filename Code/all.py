@@ -139,7 +139,8 @@ def invoke_pageAdmin():
 # Routes and functionalities for signup module
 @signup_bp.route("/register", methods=["POST"])
 def signup_page():
-    return render_template("Registration.html")
+    errors = None
+    return render_template("Registration.html", errors=errors)
 
 
 @signup_bp.route("/signup", methods=["POST"])
@@ -161,25 +162,21 @@ def signup():
         dob,
     )
     print("attempting to authenticate:")
-    #errors = []
-    #if len(username) <= 8:
-    #    errors.append("Username too short: " + username)
-    #if password != confirmPassword:
-    #    errors.append("Passwords don't match: " + password + ", " + confirmPassword)
+    errors = []
+    if len(username) <= 8:
+        errors.append("Username too short: " + username)
+    if password != confirmPassword:
+        errors.append("Passwords don't match: " + password + ", " + confirmPassword)
     email_regex = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-    #if not re.match(email_regex, email):
-    #    errors.append("Invalid email: " + email)
+    if not re.match(email_regex, email):
+        errors.append("Invalid email: " + email)
     year = int(dob[:4]) if len(dob) >= 4 else 9999
-    #if year >= 2005:
-    #    errors.append("You must be >=18: " + dob)
-    #if errors:
-    if len(username) <= 8 or password != confirmPassword or not re.match(email_regex, email) or year >= 2005:
-        #return "\n".join(errors)
-        return render_template("RegistrationFail.html")
-    else:
+    if year >= 2005:
+        errors.append("You must be >=18: " + dob)
+    if not errors:
         print("Sign up success")
         Connector.createUser(username, password, email, dob)
-        return render_template("RegistrationSuccess.html")
+    return render_template("RegistrationCheck.html", errors=errors)
 
 
 # Routes and functionalities for admin_server module
