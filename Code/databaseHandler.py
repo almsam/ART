@@ -1,22 +1,23 @@
 import mysql.connector #must download in pip
+from validation import parameterValidator
 
 class databaseHandler:
-    ARTdb = None
 
-    def openDatabaseConnection(self):   #opens db connection
-        self.ARTdb = mysql.connector.connect(    #building connection to database
+    def openDatabaseConnection(self):   #opens db connection and returns it
+        ARTdb = mysql.connector.connect(    #building connection to database
         host="localhost",                   #database is hosted on local machine
         user="ART",                         #User name to access database
         password="ARTpw",                   #Password to access database
         database='ART',                     #Database name
         ssl_disabled='True',
-        port=3307
+        port=3307                           #port number
         )
+        return ARTdb
 
     def getUsers(self): #temporary, prints all users and all info from users
         try:
-            self.openDatabaseConnection()
-            cursor = self.ARTdb.cursor()             #builds a cursor to retain selected information from queries
+            ARTdb = self.openDatabaseConnection()
+            cursor = ARTdb.cursor()             #builds a cursor to retain selected information from queries
             query = "SELECT * from User" #SQL Query with variable inserts: %s for string, %d for integers
             cursor.execute(query)               #Executes query with cursor
 
@@ -27,16 +28,36 @@ class databaseHandler:
         except mysql.connector.Error as err:
             print(err)
         finally:
-            self.ARTdb.close()
+            ARTdb.close()
 
-    def createUser(self, name, password, email, dob):   #registers a user to the database
+    def validateUser(self, username: str, password: str) -> bool:   #returns if username and password combination is in list of users
+        #validation code for input parameters
+        validated = False
         try:
-            self.openDatabaseConnection()
+            ARTdb = self.openDatabaseConnection()
+            cursor = ARTdb.cursor()
+            query = "SELECT username, password from User WHERE username = %s AND password = %s"
+            cursor.execute(query, (username, password))
 
-            cursor = self.ARTdb.cursor()             #builds a cursor to retain selected information from queries
+            for users in cursor:
+                validated = True
+
+            cursor.close()
+        except mysql.connector.Error as err:
+            print(err)
+        finally:
+            ARTdb.close()
+            return validated
+
+    def createUser(self, name: str, password: str, email: str, dob: str):   #registers a user to the database
+        #todo, create class with validation functions for parameters
+        try:
+            ARTdb = self.openDatabaseConnection()
+
+            cursor = ARTdb.cursor()             #builds a cursor to retain selected information from queries
             query = "INSERT INTO User (username, password, email, dateOfBirth) VALUES (%s, %s, %s, %s)"   #SQL Query with variable inserts: %s for string, %d for integers
             cursor.execute(query, (name, password, email, dob))               #Executes query with cursor
-            self.ARTdb.commit()      #uploads and commits data to database
+            ARTdb.commit()      #uploads and commits data to database
 
             cursor.close()
             validation = True
@@ -44,23 +65,5 @@ class databaseHandler:
             print(err)
             validation = False
         finally:
-            self.ARTdb.close()
+            ARTdb.close()
             return validation   #returns whether a user was successfully created
-        
-    def validateEmail(self):
-        return True
-    
-    def validateDOB(self):
-        return True
-    
-    def validateUsername(self):
-        return True
-    
-    def validatePassword(self):
-        return True
-    
-    #def convertDOB(self): idk if I need this yet
-
-Connector = databaseHandler()
-Connector.createUser("test", "test", "email@can.ca", "2001-09-01")
-Connector.getUsers()

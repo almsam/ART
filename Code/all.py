@@ -127,10 +127,7 @@ def login():
 
 
 def authenticate(UN, PW):
-    if UN == "ss":
-        if PW == "ss":
-            return True
-    return False
+    return Connector.validateUser(UN,PW)
 
 
 def invoke_pageAdmin():
@@ -142,7 +139,8 @@ def invoke_pageAdmin():
 # Routes and functionalities for signup module
 @signup_bp.route("/register", methods=["POST"])
 def signup_page():
-    return render_template("Registration.html")
+    errors = None
+    return render_template("Registration.html", errors=errors)
 
 
 @signup_bp.route("/signup", methods=["POST"])
@@ -174,23 +172,11 @@ def signup():
         errors.append("Invalid email: " + email)
     year = int(dob[:4]) if len(dob) >= 4 else 9999
     if year >= 2005:
-        errors.append("You must be <=18: " + dob)
-    if errors:
-        return "\n".join(errors)
-    else:
+        errors.append("You must be >=18: " + dob)
+    if not errors:
         print("Sign up success")
-        return (
-            "Sign up success, Received username: "
-            + username
-            + " password: "
-            + password
-            + " cp: "
-            + confirmPassword
-            + " email: "
-            + email
-            + " dob: "
-            + dob
-        )
+        Connector.createUser(username, password, email, dob)
+    return render_template("RegistrationCheck.html", errors=errors)
 
 
 # Routes and functionalities for admin_server module

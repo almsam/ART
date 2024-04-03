@@ -18,9 +18,10 @@
   <img src="../Images/icon.png" alt="redcanvas" class="icon" />
 </header>
 <h2>Registration</h2>
-<form id="registrationForm" onsubmit="return validateForm()">
+{% block check %}{% endblock %}
+<form action="/signup" method="POST">
   <div>
-    <label for="username">Username:</label>
+    <label for="username">Username (Must be > 8 characters):</label>
     <input type="text" id="username" name="username" required />
   </div>
   <div>
@@ -41,7 +42,7 @@
     <input type="email" id="email" name="email" required />
   </div>
   <div>
-    <label for="dob">Date of Birth:</label>
+    <label for="dob">Date of Birth (You must be at least 18 years old):</label>
     <input type="date" id="dob" name="dob" required />
   </div>
   <div>
@@ -49,8 +50,12 @@
   </div>
 </form>
 
+<form action="/">
+  <button id="login">Go Back</button>
+</form>
+
 <script>
-  $('#submit').click(function() {
+  /*$('#submit').click(function() {
     var username = $('#username').val();
     var password = $('#password').val();
     var confirmPassword = $('#confirmPassword').val();
@@ -70,7 +75,7 @@
             // Handle error as needed
         }
     });
-});
+});*/
 
 //$('#submit').click(function() {
   //var username = $('#username').val(); // Get the value from the input field
