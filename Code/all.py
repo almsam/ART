@@ -127,11 +127,10 @@ def login():
 
 
 def authenticate(UN, PW):
-    (username, password) = Connector.getUsernameAndPassword(UN, PW)
-    if UN is not None and PW is not None:
-        if UN == username and PW == password:
-            return True
-    return False
+    if (Connector.validateUser(UN,PW)):
+        return True
+    else:
+        return False
 
 
 def invoke_pageAdmin():
