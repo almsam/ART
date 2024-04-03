@@ -1,4 +1,5 @@
 import mysql.connector #must download in pip
+from validation import parameterValidator
 
 class databaseHandler:
 
