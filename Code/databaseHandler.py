@@ -3,6 +3,8 @@ from validation import parameterValidator
 
 class databaseHandler:
 
+    Validator = parameterValidator()
+
     def openDatabaseConnection(self):   #opens db connection and returns it
         ARTdb = mysql.connector.connect(    #building connection to database
         host="localhost",                   #database is hosted on local machine
@@ -31,39 +33,41 @@ class databaseHandler:
             ARTdb.close()
 
     def validateUser(self, username: str, password: str) -> bool:   #returns if username and password combination is in list of users
-        #validation code for input parameters
-        validated = False
-        try:
-            ARTdb = self.openDatabaseConnection()
-            cursor = ARTdb.cursor()
-            query = "SELECT username, password from User WHERE username = %s AND password = %s"
-            cursor.execute(query, (username, password))
+        if (self.Validator.validateNames(username) and self.Validator.validatePassword(password)):
+            validated = False
+            try:
+                ARTdb = self.openDatabaseConnection()
+                cursor = ARTdb.cursor()
+                query = "SELECT username, password from User WHERE username = %s AND password = %s"
+                cursor.execute(query, (username, password))
 
-            for users in cursor:
-                validated = True
+                for users in cursor:
+                    validated = True
 
-            cursor.close()
-        except mysql.connector.Error as err:
-            print(err)
-        finally:
-            ARTdb.close()
-            return validated
+                cursor.close()
+            except mysql.connector.Error as err:
+                print(err)
+            finally:
+                ARTdb.close()
+                return validated
+        return False
 
     def createUser(self, name: str, password: str, email: str, dob: str):   #registers a user to the database
-        #todo, create class with validation functions for parameters
-        try:
-            ARTdb = self.openDatabaseConnection()
+        if (self.Validator.validateNames(name) and self.Validator.validatePassword(password) and self.Validator.validateEmail(email)):  #todo, add dob validation when implemented
+            try:
+                ARTdb = self.openDatabaseConnection()
 
-            cursor = ARTdb.cursor()             #builds a cursor to retain selected information from queries
-            query = "INSERT INTO User (username, password, email, dateOfBirth) VALUES (%s, %s, %s, %s)"   #SQL Query with variable inserts: %s for string, %d for integers
-            cursor.execute(query, (name, password, email, dob))               #Executes query with cursor
-            ARTdb.commit()      #uploads and commits data to database
+                cursor = ARTdb.cursor()             #builds a cursor to retain selected information from queries
+                query = "INSERT INTO User (username, password, email, dateOfBirth) VALUES (%s, %s, %s, %s)"   #SQL Query with variable inserts: %s for string, %d for integers
+                cursor.execute(query, (name, password, email, dob))               #Executes query with cursor
+                ARTdb.commit()      #uploads and commits data to database
 
-            cursor.close()
-            validation = True
-        except mysql.connector.Error as err:
-            print(err)
-            validation = False
-        finally:
-            ARTdb.close()
-            return validation   #returns whether a user was successfully created
+                cursor.close()
+                validation = True
+            except mysql.connector.Error as err:
+                print(err)
+                validation = False
+            finally:
+                ARTdb.close()
+                return validation   #returns whether a user was successfully created
+        return False
