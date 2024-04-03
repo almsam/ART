@@ -1,0 +1,64 @@
+body {
+    background-color: #c2e3ff;
+    background-image: url('https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaTJ0ZzF6aW00c3QzYnllbGNlZDExYWprOHRsM3Y1M2ppMGVldnR0ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/JMcF2Vp0I4Cc91Bl8r/giphy.gif');
+    background-size: 1200px 800px;
+    background-repeat: no-repeat; 
+}
+
+.container {
+    display: flex;
+    align-items: flex-start; 
+    margin: 0;
+    justify-content: center;
+}
+.heading {
+    color: #5986f0;
+    margin-right: 10px; 
+}
+
+.icon {
+    width: 40px;
+    height: auto;
+}
+
+h2 {
+    margin-left: 5%;
+    color: #25306b;
+    text-align: center;
+}
+
+h3 {
+    margin-left: 10%;
+    color: #25306b;
+}
+
+.userfill,
+.passfill {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-left: 10%;
+    margin-top: 20px;
+}
+
+button {
+    color: #25306b; 
+    background-color: #5986f0; 
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-left: 30%;
+    margin:50 auto;
+}
+
+button:hover {
+    background-color: #25306b; 
+}
+
+.register p {
+    margin-top: 10%;
+    color: #25306b;
+    text-align: center;
+}
+
