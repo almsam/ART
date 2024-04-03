@@ -1,0 +1,52 @@
+body {
+    background-color:#c2e3ff;  
+}
+
+h1 {
+    color:#5986f0;
+    margin-right: 10px; 
+}
+
+button {
+    color:#25306b; 
+    background-color: #5986f0; 
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+
+button {
+    display: block;
+    margin: 10px auto;
+}
+
+
+button:nth-of-type(1),
+button:nth-of-type(2) {
+    display: inline-block;
+    margin-left: 10px;
+}
+
+
+
+
+button:nth-of-type(4),
+button:nth-of-type(5) {
+    display: inline-block;
+    margin-left: 10px;
+}
+
+
+
+
+button:nth-of-type(3) {
+   
+    margin-left: 10px;
+}
+
+button:nth-of-type(6) {
+   
+    margin-left: 10px;
+}
