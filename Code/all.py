@@ -171,14 +171,13 @@ def signup():   #todo, refactor
         errors.append(nameConfirm + username)   #returns whether too long or short
     
     if password != confirmPassword:
-        errors.append("Passwords don't match: " + password + ", " + confirmPassword)
+        errors.append("Passwords do not match.")
 
     if not Validator.validateEmail(email):
         errors.append("Invalid email: " + email)
 
-    year = int(dob[:4]) if len(dob) >= 4 else 9999  #real silly and needs fixing
-    if year >= 2005:
-        errors.append("You must be >=18: " + dob)
+    if not Validator.validateAge(dob):
+        errors.append("Your age is too young: " + dob)
 
     if not errors:
         print("Sign up success")
