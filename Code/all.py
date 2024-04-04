@@ -22,6 +22,7 @@ login_bp = Blueprint("login", __name__)
 signup_bp = Blueprint("signup", __name__)
 server_bp = Blueprint("server", __name__)
 channel_bp = Blueprint("channel", __name__)
+profile_bp = Blueprint("profile", __name__)
 
 currentUser = loggedInUser()
 
@@ -199,7 +200,7 @@ def server_page():
     if currentUser.id is None:
         return redirect(url_for("login.login_page"))
     else:
-        username = Connector.getUser(currentUser.id)
+        username = Connector.getUser(currentUser.id)[1]
         return render_template("Server.html", username=username)
 
 
@@ -245,6 +246,60 @@ def delete_server():
     else:
         print("Deleted Server: ", serverName)
         return "Deleted Server: " + serverName
+    
+# Routes and functionalities for edit profile module
+@profile_bp.route("/profile")
+def profile_page():
+    if currentUser.id is None:
+        return redirect(url_for("login.login_page"))
+    else:
+        username = Connector.getUser(currentUser.id)[1]
+        password = Connector.getUser(currentUser.id)[2]
+        email = Connector.getUser(currentUser.id)[3]
+        dob = Connector.getUser(currentUser.id)[4]
+        pronouns = "" if Connector.getUser(currentUser.id)[5] is None else Connector.getUser(currentUser.id)[5]
+        desc = "" if Connector.getUser(currentUser.id)[6] is None else Connector.getUser(currentUser.id)[6]
+        
+        return render_template("Profile.html", username=username, password=password, email=email, dob=dob, pronouns=pronouns, desc=desc)
+    
+@profile_bp.route("/editprofile", methods=["POST"])
+def edit_profile():   #todo, refactor
+    if currentUser.id is not None:
+        username = request.form["username"]
+        password = request.form["password"]
+        confirmPassword = request.form["confirmPassword"]
+        email = request.form["email"]
+        dob = request.form["dob"]
+        pronouns = request.form["pronouns"]
+        desc = request.form["desc"]
+
+        errors = []
+
+        nameConfirm = Validator.validateNames(username)
+        if nameConfirm != None: #no error if None
+            errors.append(nameConfirm + username)   #returns whether too long or short
+        
+        if password != confirmPassword:
+            errors.append("Passwords do not match.")
+
+        if not Validator.validateEmail(email):
+            errors.append("Invalid email: " + email)
+
+        if not Validator.validateAge(dob):
+            errors.append("Your age is too young: " + dob)
+
+        if not errors:
+            Connector.editUser(currentUser.id, username, password, email, dob, pronouns, desc)
+
+        username = Connector.getUser(currentUser.id)[1]
+        password = Connector.getUser(currentUser.id)[2]
+        email = Connector.getUser(currentUser.id)[3]
+        dob = Connector.getUser(currentUser.id)[4]
+        pronouns = "" if Connector.getUser(currentUser.id)[5] is None else Connector.getUser(currentUser.id)[5]
+        desc = "" if Connector.getUser(currentUser.id)[6] is None else Connector.getUser(currentUser.id)[6]
+        return render_template("ProfileCheck.html", username=username, password=password, email=email, dob=dob, pronouns=pronouns, desc=desc, errors=errors)
+    else:
+        return redirect(url_for("login.login_page"))
 
 
 # Register blueprints
@@ -253,6 +308,7 @@ app.register_blueprint(login_bp)
 app.register_blueprint(signup_bp)
 app.register_blueprint(server_bp)
 app.register_blueprint(channel_bp)
+app.register_blueprint(profile_bp)
 
 if __name__ == "__main__":
     app.run(debug=True)
