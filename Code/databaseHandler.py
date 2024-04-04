@@ -53,7 +53,7 @@ class databaseHandler:
         return False
 
     def createUser(self, name: str, password: str, email: str, dob: str):   #registers a user to the database
-        if ((self.Validator.validateNames(name) is None) and self.Validator.validateEmail(email) and self.Validator.validatePassword(password) and ):  #todo, add dob validation when implemented
+        if ((self.Validator.validateNames(name) is None) and self.Validator.validateEmail(email) and self.Validator.validatePassword(password) and self.Validator.validateDate(dob)):  #todo, add dob validation when implemented
             try:
                 ARTdb = self.openDatabaseConnection()
 
