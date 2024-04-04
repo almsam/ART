@@ -259,7 +259,6 @@ def profile_page():
         dob = Connector.getUser(currentUser.id)[4]
         pronouns = "" if Connector.getUser(currentUser.id)[5] is None else Connector.getUser(currentUser.id)[5]
         desc = "" if Connector.getUser(currentUser.id)[6] is None else Connector.getUser(currentUser.id)[6]
-        
         return render_template("Profile.html", username=username, password=password, email=email, dob=dob, pronouns=pronouns, desc=desc)
     
 @profile_bp.route("/editprofile", methods=["POST"])
