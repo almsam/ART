@@ -1,0 +1,2 @@
+class loggedInUser:
+    id = None

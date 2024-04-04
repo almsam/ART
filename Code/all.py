@@ -9,6 +9,7 @@ from flask import (
 )
 from databaseHandler import databaseHandler
 from validation import parameterValidator
+from loggedInUser import loggedInUser
 
 Connector = databaseHandler()
 Validator = parameterValidator()
@@ -19,12 +20,10 @@ app = Flask(__name__)
 admin_bp = Blueprint("admin", __name__)
 login_bp = Blueprint("login", __name__)
 signup_bp = Blueprint("signup", __name__)
-admin_server_bp = Blueprint("admin_server", __name__)
-index_bp = Blueprint("index", __name__)
+server_bp = Blueprint("server", __name__)
+channel_bp = Blueprint("channel", __name__)
 
-
-# admin_page(); signup_page(); admin_server_page(); login_page()
-
+currentUser = loggedInUser()
 
 @login_bp.route("/")
 def login_page():
@@ -39,16 +38,18 @@ def goto_page(page):
         return render_template("SignUp.html")
     elif page == "Admin":
         return render_template("Admin.html")
-    elif page == "Index":
-        return render_template("Index.html")
+    elif page == "Server":
+        return render_template("Server.html")
+    elif page == "Channel":
+        return render_template("Channel.html")
     # Add more conditions for other pages as needed
     else:
         return "Page not found"
 
 
-@index_bp.route("/index")
+@channel_bp.route("/channel")
 def index_page():
-    return render_template("Index.html")
+    return render_template("Channel.html")
 
 # Routes and functionalities for admin module
 @admin_bp.route("/admin")
@@ -120,15 +121,22 @@ def login():
     password = request.form["password"]
     print("Username:", username)
     print("Password:", password)
-    if authenticate(username, password):
-        # admin_page()
-        return redirect(url_for("index.index_page"))
+    currentUser.id = authenticate(username, password)
+    if currentUser.id is not None:
+        print(currentUser.id)
+        return redirect(url_for("server.server_page"))
     else:
+        print("Login fail")
         return render_template("LogInFail.html")
+    
+@login_bp.route("/logout", methods=["POST"])
+def logout():
+    currentUser.id = None
+    return redirect(url_for("login.login_page"))
 
 
-def authenticate(UN, PW) -> bool:
-    return Connector.validateUser(UN,PW)
+def authenticate(UN, PW):
+    return Connector.validateUser(UN, PW)
 
 
 def invoke_pageAdmin():
@@ -185,13 +193,17 @@ def signup():   #todo, refactor
     return render_template("RegistrationCheck.html", errors=errors)
 
 
-# Routes and functionalities for admin_server module
-@admin_server_bp.route("/admin_server")
-def admin_server_page():
-    return render_template("Admin_Server.html")
+# Routes and functionalities for server module
+@server_bp.route("/server")
+def server_page():
+    if currentUser.id is None:
+        return redirect(url_for("login.login_page"))
+    else:
+        username = Connector.getUser(currentUser.id)
+        return render_template("Server.html", username=username)
 
 
-@admin_server_bp.route("/CreateChannel", methods=["POST"])
+@server_bp.route("/CreateChannel", methods=["POST"])
 def create_channel():
     channelName = request.form.get("ChannelName")
     if not channelName:
@@ -202,7 +214,7 @@ def create_channel():
         return "Created Channel: " + channelName
 
 
-@admin_server_bp.route("/DeleteChannel", methods=["POST"])
+@server_bp.route("/DeleteChannel", methods=["POST"])
 def delete_channel():
     channelName = request.form.get("ChannelName")
     if not channelName:
@@ -213,7 +225,7 @@ def delete_channel():
         return "Deleted Channel: " + channelName
 
 
-@admin_server_bp.route("/CreateServer", methods=["POST"])
+@server_bp.route("/CreateServer", methods=["POST"])
 def create_server():
     serverName = request.form.get("ServerName")
     if not serverName:
@@ -224,7 +236,7 @@ def create_server():
         return "Created Server: " + serverName
 
 
-@admin_server_bp.route("/DeleteServer", methods=["POST"])
+@server_bp.route("/DeleteServer", methods=["POST"])
 def delete_server():
     serverName = request.form.get("ServerName")
     if not serverName:
@@ -239,8 +251,8 @@ def delete_server():
 app.register_blueprint(admin_bp)
 app.register_blueprint(login_bp)
 app.register_blueprint(signup_bp)
-app.register_blueprint(admin_server_bp)
-app.register_blueprint(index_bp)
+app.register_blueprint(server_bp)
+app.register_blueprint(channel_bp)
 
 if __name__ == "__main__":
     app.run(debug=True)

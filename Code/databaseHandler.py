@@ -16,41 +16,43 @@ class databaseHandler:
         )
         return ARTdb
 
-    def getUsers(self): #temporary, prints all users and all info from users
+    def getUser(self, id: int):
+        username = None
         try:
             ARTdb = self.openDatabaseConnection()
-            cursor = ARTdb.cursor()             #builds a cursor to retain selected information from queries
-            query = "SELECT * from User" #SQL Query with variable inserts: %s for string, %d for integers
-            cursor.execute(query)               #Executes query with cursor
+            cursor = ARTdb.cursor()
+            query = "SELECT username from User WHERE id = %s"
+            cursor.execute(query, (id,))
 
-            for (user) in cursor:           #How to iterate over cursor, is all variables selected
-                print(user)
+            for user in cursor:
+                username = user[0]
 
             cursor.close()
         except mysql.connector.Error as err:
             print(err)
         finally:
             ARTdb.close()
+            return username
 
-    def validateUser(self, username: str, password: str) -> bool:   #returns if username and password combination is in list of users
+    def validateUser(self, username: str, password: str):   #returns if username and password combination is in list of users
         if (self.Validator.validateNames(username) is None and not self.Validator.validatePassword(password)):
-            validated = False
+            userId = None
             try:
                 ARTdb = self.openDatabaseConnection()
                 cursor = ARTdb.cursor()
-                query = "SELECT username, password from User WHERE username = %s AND password = %s"
+                query = "SELECT id, username, password from User WHERE username = %s AND password = %s"
                 cursor.execute(query, (username, password))
 
-                for users in cursor:
-                    validated = True
+                for user in cursor:
+                    userId = user[0]
 
                 cursor.close()
             except mysql.connector.Error as err:
                 print(err)
             finally:
                 ARTdb.close()
-                return validated
-        return False
+                return userId
+        return None
 
     def createUser(self, name: str, password: str, email: str, dob: str):   #registers a user to the database
         if (self.Validator.validateNames(name) is None and not self.Validator.validatePassword(password) and self.Validator.validateEmail(email)):  #todo, add dob validation when implemented
