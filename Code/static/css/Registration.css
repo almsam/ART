@@ -4,10 +4,12 @@ body{
 
 
 .container {
-    display: flex;
-    align-items: flex-start; 
-    margin: 0;
-    justify-content: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  margin-top: 50px;
 }
 
 .heading {
@@ -33,7 +35,36 @@ h2{
     background-color: #5986f0; 
  }
 
+ button:hover {
+    background-color: #33408a; 
+}
+
  p{
 
     color: #25306b;
  }
+
+ form {
+    width: 300px; 
+    margin-top: 20px; 
+  }
+  
+  form div {
+    margin-bottom: 10px;
+  }
+  
+  form label {
+    display: block;
+  }
+  
+  form input {
+    width: 100%;
+    padding: 5px;
+    box-sizing: border-box;
+  }
+  
+  form button {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+  }
