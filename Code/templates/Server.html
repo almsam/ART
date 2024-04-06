@@ -20,4 +20,10 @@
 <form action="/logout" method="POST">
     <button id="logout">Log Out</button>
 </form>
+<h2>Members:</h2>
+{% if users|length > 0 %}
+    {% for user in users %}
+        <h4>{{user}}</h4>
+    {% endfor %}
+{% endif %}
 {% endblock %}

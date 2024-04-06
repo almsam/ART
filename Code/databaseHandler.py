@@ -15,8 +15,26 @@ class databaseHandler:
         port=3307                           #port number
         )
         return ARTdb
+    
+    def getUsers(self):
+        users = []
+        try:
+            ARTdb = self.openDatabaseConnection()
+            cursor = ARTdb.cursor()
+            query = "SELECT username from User ORDER BY username"
+            cursor.execute(query)
 
-    def getUser(self, id: int):
+            for user in cursor:
+                users.append(user[0])
+
+            cursor.close()
+        except mysql.connector.Error as err:
+            print(err)
+        finally:
+            ARTdb.close()
+            return users
+
+    def getUserById(self, id: int):
         userInfo = None
         try:
             ARTdb = self.openDatabaseConnection()

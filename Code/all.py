@@ -178,6 +178,9 @@ def signup():
     nameConfirm = Validator.validateNames(username)
     if nameConfirm != None: #no error if None
         errors.append(nameConfirm + username)   #returns whether too long or short
+
+    if username in Connector.getUsers():
+        errors.append("Username is already taken: " + username)
     
     if password != confirmPassword:
         errors.append("Passwords do not match.")
@@ -200,8 +203,9 @@ def server_page():
     if currentUser.id is None:
         return redirect(url_for("login.login_page"))
     else:
-        username = Connector.getUser(currentUser.id)[1]
-        return render_template("Server.html", username=username)
+        username = Connector.getUserById(currentUser.id)[1]
+        users = Connector.getUsers()
+        return render_template("Server.html", username=username, users=users)
 
 
 @server_bp.route("/CreateChannel", methods=["POST"])
@@ -253,12 +257,12 @@ def profile_page():
     if currentUser.id is None:
         return redirect(url_for("login.login_page"))
     else:
-        username = Connector.getUser(currentUser.id)[1]
-        password = Connector.getUser(currentUser.id)[2]
-        email = Connector.getUser(currentUser.id)[3]
-        dob = Connector.getUser(currentUser.id)[4]
-        pronouns = "" if Connector.getUser(currentUser.id)[5] is None else Connector.getUser(currentUser.id)[5]
-        desc = "" if Connector.getUser(currentUser.id)[6] is None else Connector.getUser(currentUser.id)[6]
+        username = Connector.getUserById(currentUser.id)[1]
+        password = Connector.getUserById(currentUser.id)[2]
+        email = Connector.getUserById(currentUser.id)[3]
+        dob = Connector.getUserById(currentUser.id)[4]
+        pronouns = "" if Connector.getUserById(currentUser.id)[5] is None else Connector.getUserById(currentUser.id)[5]
+        desc = "" if Connector.getUserById(currentUser.id)[6] is None else Connector.getUserById(currentUser.id)[6]
         return render_template("Profile.html", username=username, password=password, email=email, dob=dob, pronouns=pronouns, desc=desc)
     
 @profile_bp.route("/editprofile", methods=["POST"])
@@ -278,6 +282,9 @@ def edit_profile():   #todo, refactor
         if nameConfirm != None: #no error if None
             errors.append(nameConfirm + username)   #returns whether too long or short
         
+        if username in Connector.getUsers():
+            errors.append("Username is already taken: " + username)
+    
         if password != confirmPassword:
             errors.append("Passwords do not match.")
 
@@ -290,12 +297,12 @@ def edit_profile():   #todo, refactor
         if not errors:
             Connector.editUser(currentUser.id, username, password, email, dob, pronouns, desc)
 
-        username = Connector.getUser(currentUser.id)[1]
-        password = Connector.getUser(currentUser.id)[2]
-        email = Connector.getUser(currentUser.id)[3]
-        dob = Connector.getUser(currentUser.id)[4]
-        pronouns = "" if Connector.getUser(currentUser.id)[5] is None else Connector.getUser(currentUser.id)[5]
-        desc = "" if Connector.getUser(currentUser.id)[6] is None else Connector.getUser(currentUser.id)[6]
+        username = Connector.getUserById(currentUser.id)[1]
+        password = Connector.getUserById(currentUser.id)[2]
+        email = Connector.getUserById(currentUser.id)[3]
+        dob = Connector.getUserById(currentUser.id)[4]
+        pronouns = "" if Connector.getUserById(currentUser.id)[5] is None else Connector.getUserById(currentUser.id)[5]
+        desc = "" if Connector.getUserById(currentUser.id)[6] is None else Connector.getUserById(currentUser.id)[6]
         return render_template("ProfileCheck.html", username=username, password=password, email=email, dob=dob, pronouns=pronouns, desc=desc, errors=errors)
     else:
         return redirect(url_for("login.login_page"))
