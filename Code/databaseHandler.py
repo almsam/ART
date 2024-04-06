@@ -35,7 +35,7 @@ class databaseHandler:
             return userInfo
 
     def validateUser(self, username: str, password: str) -> bool:   #returns if username and password combination is in list of users
-        if (self.Validator.validateNames(username) is None and not self.Validator.validatePassword(password)):
+        if (self.Validator.validateNames(username) is None and self.Validator.validatePassword(password)):
             userId = None
             try:
                 ARTdb = self.openDatabaseConnection()
@@ -55,7 +55,7 @@ class databaseHandler:
         return None
 
     def createUser(self, name: str, password: str, email: str, dob: str):   #registers a user to the database
-        if (self.Validator.validateNames(name) is None and not self.Validator.validatePassword(password) and self.Validator.validateEmail(email)):  #todo, add dob validation when implemented
+        if (self.Validator.validateNames(name) is None and self.Validator.validatePassword(password) and self.Validator.validateEmail(email)):  #todo, add dob validation when implemented
             try:
                 ARTdb = self.openDatabaseConnection()
 
@@ -75,7 +75,7 @@ class databaseHandler:
         return False
     
     def editUser(self, id: int, name: str, password: str, email: str, dob: str, pronouns: str, desc: str):   #edits a user in the database
-        if (self.Validator.validateNames(name) is None and not self.Validator.validatePassword(password) and self.Validator.validateEmail(email)):  #todo, add dob validation when implemented
+        if (self.Validator.validateNames(name) is None and self.Validator.validatePassword(password) and self.Validator.validateEmail(email)):  #todo, add dob validation when implemented
             try:
                 ARTdb = self.openDatabaseConnection()
 
