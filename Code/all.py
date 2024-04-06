@@ -282,7 +282,8 @@ def edit_profile():   #todo, refactor
         if nameConfirm != None: #no error if None
             errors.append(nameConfirm + username)   #returns whether too long or short
         
-        if username in Connector.getUsers():
+        oldUsername = Connector.getUserById(currentUser.id)[1]
+        if username != oldUsername and username in Connector.getUsers():
             errors.append("Username is already taken: " + username)
     
         if password != confirmPassword:
