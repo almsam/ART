@@ -7,10 +7,11 @@ from flask import (
     Blueprint,
     current_app,
 )
-import re
 from databaseHandler import databaseHandler
+from validation import parameterValidator
 
 Connector = databaseHandler()
+Validator = parameterValidator()
 
 app = Flask(__name__)
 
@@ -126,7 +127,7 @@ def login():
         return render_template("LogInFail.html")
 
 
-def authenticate(UN, PW):
+def authenticate(UN, PW) -> bool:
     return Connector.validateUser(UN,PW)
 
 
@@ -144,7 +145,7 @@ def signup_page():
 
 
 @signup_bp.route("/signup", methods=["POST"])
-def signup():
+def signup():   #todo, refactor
     username = request.form["username"]
     password = request.form["password"]
     confirmPassword = request.form["confirmPassword"]
@@ -162,17 +163,22 @@ def signup():
         dob,
     )
     print("attempting to authenticate:")
+
     errors = []
-    if len(username) <= 8:
-        errors.append("Username too short: " + username)
+
+    nameConfirm = Validator.validateNames(username)
+    if nameConfirm != None: #no error if None
+        errors.append(nameConfirm + username)   #returns whether too long or short
+    
     if password != confirmPassword:
-        errors.append("Passwords don't match: " + password + ", " + confirmPassword)
-    email_regex = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-    if not re.match(email_regex, email):
+        errors.append("Passwords do not match.")
+
+    if not Validator.validateEmail(email):
         errors.append("Invalid email: " + email)
-    year = int(dob[:4]) if len(dob) >= 4 else 9999
-    if year >= 2005:
-        errors.append("You must be >=18: " + dob)
+
+    if not Validator.validateAge(dob):
+        errors.append("Your age is too young: " + dob)
+
     if not errors:
         print("Sign up success")
         Connector.createUser(username, password, email, dob)
