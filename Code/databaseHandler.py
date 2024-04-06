@@ -34,7 +34,7 @@ class databaseHandler:
             ARTdb.close()
             return userInfo
 
-    def validateUser(self, username: str, password: str):   #returns if username and password combination is in list of users
+    def validateUser(self, username: str, password: str) -> bool:   #returns if username and password combination is in list of users
         if (self.Validator.validateNames(username) is None and not self.Validator.validatePassword(password)):
             userId = None
             try:

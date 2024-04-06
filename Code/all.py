@@ -136,7 +136,7 @@ def logout():
     return redirect(url_for("login.login_page"))
 
 
-def authenticate(UN, PW):
+def authenticate(UN, PW) -> bool:
     return Connector.validateUser(UN, PW)
 
 
@@ -154,7 +154,7 @@ def signup_page():
 
 
 @signup_bp.route("/signup", methods=["POST"])
-def signup():   #todo, refactor
+def signup():
     username = request.form["username"]
     password = request.form["password"]
     confirmPassword = request.form["confirmPassword"]
