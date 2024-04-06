@@ -33,7 +33,7 @@ class databaseHandler:
             ARTdb.close()
 
     def validateUser(self, username: str, password: str) -> bool:   #returns if username and password combination is in list of users
-        if (self.Validator.validateNames(username) is None and not self.Validator.validatePassword(password)):
+        if (self.Validator.validateNames(username) is None and self.Validator.validatePassword(password)):
             validated = False
             try:
                 ARTdb = self.openDatabaseConnection()
