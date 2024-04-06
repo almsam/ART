@@ -23,9 +23,9 @@ class parameterValidator:
         if (not self.auxValidateString(name)):
             return "Not a string"
         elif len(name) < 8:
-            return "Name too short: "
+            return "Username too short: "
         elif len(name) > 64:
-            return "Name too long: "
+            return "Username too long: "
         return None
     
     def validateDescription(self, description: str) -> bool:

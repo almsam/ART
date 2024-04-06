@@ -1,0 +1,23 @@
+{% extends 'Base.html' %}
+
+{% block head %}
+<title>Server</title>
+<link rel="stylesheet" href="../static/css/Server.css">
+{% endblock %}
+
+{% block header %}
+<h1>Server Page</h1>
+<h3>Logged in as: {{username}}</h3>
+{% endblock %}
+
+{% block body %}
+<input type="text" id="ChannelName"> <button id="subChannelName">Submit Channel Name</button>
+<button id="CreateChannel">Create Channel</button>
+<button id="DeleteChannel">Delete Channel</button>
+<form action="/profile">
+    <button id="profile">Update Personal Info</button>
+</form>
+<form action="/logout" method="POST">
+    <button id="logout">Log Out</button>
+</form>
+{% endblock %}
