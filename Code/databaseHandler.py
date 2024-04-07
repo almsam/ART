@@ -16,6 +16,7 @@ class databaseHandler:
         )
         return ARTdb
     
+    #Returns a list of the usernames of all users in the database in alphabetical order
     def getUsers(self):
         users = []
         try:
@@ -34,6 +35,7 @@ class databaseHandler:
             ARTdb.close()
             return users
 
+    #Returns the information of a user matching the given user id
     def getUserById(self, id: int):
         if (self.Validator.validateInt(id)):
             userInfo = None
@@ -54,6 +56,7 @@ class databaseHandler:
                 return userInfo
         return None
     
+    #Returns the information of a user matching the given username
     def getUserByName(self, name: str):
         if (self.Validator.validateNames(name) is None):
             userInfo = None
@@ -74,7 +77,8 @@ class databaseHandler:
                 return userInfo
         return None
 
-    def validateUser(self, username: str, password: str) -> bool:   #returns if username and password combination is in list of users
+    #Returns if the given username and password combination is in the list of users
+    def validateUser(self, username: str, password: str) -> bool:
         if (self.Validator.validateNames(username) is None and self.Validator.validatePassword(password)):
             userId = None
             try:
@@ -94,15 +98,16 @@ class databaseHandler:
                 return userId
         return None
 
-    def createUser(self, name: str, password: str, email: str, dob: str):   #registers a user to the database
+    #Registers a user to the database with the given information
+    def createUser(self, name: str, password: str, email: str, dob: str):   
         if (self.Validator.validateNames(name) is None and self.Validator.validatePassword(password) and self.Validator.validateEmail(email)):  #todo, add dob validation when implemented
             try:
                 ARTdb = self.openDatabaseConnection()
 
-                cursor = ARTdb.cursor()             #builds a cursor to retain selected information from queries
-                query = "INSERT INTO User (username, password, email, dateOfBirth) VALUES (%s, %s, %s, %s)"   #SQL Query with variable inserts: %s for string, %d for integers
-                cursor.execute(query, (name, password, email, dob))               #Executes query with cursor
-                ARTdb.commit()      #uploads and commits data to database
+                cursor = ARTdb.cursor()
+                query = "INSERT INTO User (username, password, email, dateOfBirth) VALUES (%s, %s, %s, %s)"
+                cursor.execute(query, (name, password, email, dob))
+                ARTdb.commit()
 
                 cursor.close()
                 validation = True
@@ -111,18 +116,19 @@ class databaseHandler:
                 validation = False
             finally:
                 ARTdb.close()
-                return validation   #returns whether a user was successfully created
+                return validation
         return False
     
-    def editUser(self, id: int, name: str, password: str, email: str, dob: str, pronouns: str, desc: str):   #edits a user in the database
+    #Edits a user in the database using the given information
+    def editUser(self, id: int, name: str, password: str, email: str, dob: str, pronouns: str, desc: str):
         if (self.Validator.validateNames(name) is None and self.Validator.validatePassword(password) and self.Validator.validateEmail(email)):  #todo, add dob validation when implemented
             try:
                 ARTdb = self.openDatabaseConnection()
 
-                cursor = ARTdb.cursor()             #builds a cursor to retain selected information from queries
-                query = "UPDATE User SET username = %s, password = %s, email = %s, dateOfBirth = %s, pronouns = %s, userDescription = %s WHERE id = %s"   #SQL Query with variable inserts: %s for string, %d for integers
-                cursor.execute(query, (name, password, email, dob, pronouns, desc, id))               #Executes query with cursor
-                ARTdb.commit()      #uploads and commits data to database
+                cursor = ARTdb.cursor()
+                query = "UPDATE User SET username = %s, password = %s, email = %s, dateOfBirth = %s, pronouns = %s, userDescription = %s WHERE id = %s"
+                cursor.execute(query, (name, password, email, dob, pronouns, desc, id))
+                ARTdb.commit()
 
                 cursor.close()
                 validation = True
@@ -131,9 +137,10 @@ class databaseHandler:
                 validation = False
             finally:
                 ARTdb.close()
-                return validation   #returns whether a user was successfully edited
+                return validation
         return False
     
+    #Returns a list of the names of all channels in the database
     def getAllChannels(self):
         channels = []
         try:
@@ -151,14 +158,15 @@ class databaseHandler:
         finally:
             ARTdb.close()
             return channels
-        
+    
+    #Returns a list of the names of all channels that the current user is a member of in alphabetical order
     def getYourChannels(self, id: int):
         channels = []
         if (self.Validator.validateInt(id)):
             try:
                 ARTdb = self.openDatabaseConnection()
                 cursor = ARTdb.cursor()
-                query = "SELECT Channel.name FROM Channel JOIN ChannelMember ON Channel.id = ChannelMember.channelId WHERE ChannelMember.userId = %s"
+                query = "SELECT Channel.name FROM Channel JOIN ChannelMember ON Channel.id = ChannelMember.channelId WHERE ChannelMember.userId = %s ORDER BY Channel.name"
                 cursor.execute(query, (id,))
 
                 for channel in cursor:
@@ -171,6 +179,7 @@ class databaseHandler:
                 ARTdb.close()
         return channels
     
+    #Returns the id and name of a channel matching the given name
     def getChannelByName(self, name: str):
         channel = None
         if (self.Validator.validateNames(name) is None):
@@ -189,14 +198,16 @@ class databaseHandler:
             finally:
                 ARTdb.close()
         return channel
-        
+    
+    #Returns a list of the names of all channels that the current user is a member of matching the given search query in alphabetical order
+    #TODO: Figure out how to pass a parameter into the field for the LIKE operator
     def searchChannelsByName(self, id: int, name: str):
         channels = []
         if (self.Validator.validateNames(name) is None and self.Validator.validateInt(id)):
             try:
                 ARTdb = self.openDatabaseConnection()
                 cursor = ARTdb.cursor()
-                query = "SELECT Channel.name FROM Channel JOIN ChannelMember ON Channel.id = ChannelMember.channelId WHERE ChannelMember.userId = %s AND Channel.name LIKE '%%s%'"
+                query = "SELECT Channel.name FROM Channel JOIN ChannelMember ON Channel.id = ChannelMember.channelId WHERE ChannelMember.userId = %s AND Channel.name LIKE '%%s%' ORDER BY Channel.name"
                 cursor.execute(query, (id, name))
 
                 for channel in cursor:
@@ -208,7 +219,8 @@ class databaseHandler:
             finally:
                 ARTdb.close()
         return channels
-        
+    
+    #Creates a new channel in the database
     def createChannel(self, name: str):
         if (self.Validator.validateNames(name) is None):
             try:
@@ -228,6 +240,7 @@ class databaseHandler:
                 return validation
         return False
     
+    #Deletes a channel from the database
     def deleteChannel(self, name: str):
         if (self.Validator.validateNames(name) is None):
             try:
@@ -247,6 +260,7 @@ class databaseHandler:
                 return validation
         return False
     
+    #Returns the given user and channel ids if the database has recorded that the user with the given id is a member of the channel with the given id
     def getChannelMember(self, userId: int, channelId: int):
         member = None
         if (self.Validator.validateInt(userId) and self.Validator.validateInt(channelId)):
@@ -266,6 +280,7 @@ class databaseHandler:
                 ARTdb.close()
         return member
     
+    #Sets the user with the given id as a member of the channel with the given id
     def addUserToChannel(self, userId: int, channelId: int):
         if (self.Validator.validateInt(userId) and self.Validator.validateInt(channelId)):
             try:
@@ -285,6 +300,7 @@ class databaseHandler:
                 return validation
         return False
     
+    #Sets the user with the given id as not a member of the channel with the given id
     def removeUserFromChannel(self, userId: int, channelId: int):
         if (self.Validator.validateInt(userId) and self.Validator.validateInt(channelId)):
             try:
@@ -304,6 +320,7 @@ class databaseHandler:
                 return validation
         return False
     
+    #Returns a list of names of all admins of the given channel
     def getAdminsOfChannel(self, channelId: int):
         admins = []
         if (self.Validator.validateInt(channelId)):
@@ -323,6 +340,7 @@ class databaseHandler:
                 ARTdb.close()
         return admins
     
+    #Returns a list of names of all members of the given channel who are not admins of said channel
     def getNonAdminsOfChannel(self, channelId: int):
         users = []
         if (self.Validator.validateInt(channelId)):
@@ -342,6 +360,7 @@ class databaseHandler:
                 ARTdb.close()
         return users
     
+    #Returns the given user and channel ids if the database has recorded that the user with the given id is an admin of the channel with the given id
     def getAdminById(self, userId: int, channelId: int):
         admin = None
         if (self.Validator.validateInt(userId) and self.Validator.validateInt(channelId)):
@@ -361,6 +380,7 @@ class databaseHandler:
                 ARTdb.close()
         return admin
 
+    #Sets the user with the given id as an admin of the channel with the given id
     def addAdmin(self, userId: int, channelId: int):
         if (self.Validator.validateInt(userId) and self.Validator.validateInt(channelId)):
             try:
@@ -380,6 +400,7 @@ class databaseHandler:
                 return validation
         return False
     
+    #Sets the user with the given id as not an admin of the channel with the given id
     def removeAdmin(self, userId: int, channelId: int):
         if (self.Validator.validateInt(userId) and self.Validator.validateInt(channelId)):
             try:

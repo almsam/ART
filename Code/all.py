@@ -43,11 +43,14 @@ def goto_page(page):
         return "Page not found"
 
 
-#Login and logout
-@login_bp.route("/") #Main page is login page
+#---Login page---
+
+#Main page is login page
+@login_bp.route("/")
 def login_page():
     return render_template("LogIn.html")
-    
+
+#Log user in using the given username and password and redirect to server page, or else print error message
 @login_bp.route("/login", methods=["POST"])
 def login():
     username = request.form["username"]
@@ -55,36 +58,33 @@ def login():
     print("Username:", username)
     print("Password:", password)
     currentUser.id = authenticate(username, password)
-    if currentUser.id is not None:
+    if currentUser.id is not None: #Store current user Id while logged in
         print(currentUser.id)
         return redirect(url_for("server.server_page"))
     else:
         print("Login fail")
         return render_template("LogInFail.html")
-    
+
+#Log out user and return to login page
 @login_bp.route("/logout", methods=["POST"])
 def logout():
-    currentUser.id = None
+    currentUser.id = None #Reset current user Id
     return redirect(url_for("login.login_page"))
 
-@login_bp.route("/process_user", methods=["POST"])
-def process_user():
-    username = request.form["username"]
-    password = request.form["password"]
-    print("Received username: ", username, password)
-    return "Received username: " + username + password
-
+#Helper method to check username and password
 def authenticate(UN, PW) -> bool:
     return Connector.validateUser(UN, PW)
 
 
 
-#Registration and profile editing
+#---Registration and profile editing pages---
+
+#Registration page with no errors the first time
 @signup_bp.route("/register", methods=["POST"])
 def signup_page():
-    errors = None
-    return render_template("Registration.html", errors=errors)
+    return render_template("Registration.html")
 
+#Register user with the given information, and reload page with a message saying whether or not registration was successful
 @signup_bp.route("/signup", methods=["POST"])
 def signup():
     username = request.form["username"]
@@ -105,29 +105,14 @@ def signup():
     )
     print("attempting to authenticate:")
 
-    errors = []
-
-    nameConfirm = Validator.validateNames(username)
-    if nameConfirm != None: #no error if None
-        errors.append(nameConfirm + username)   #returns whether too long or short
-
-    if username in Connector.getUsers():
-        errors.append("Username is already taken: " + username)
-        
-    if password != confirmPassword:
-        errors.append("Passwords do not match.")
-
-    if not Validator.validateEmail(email):
-        errors.append("Invalid email: " + email)
-
-    if not Validator.validateAge(dob):
-        errors.append("Your age is too young: " + dob)
+    errors = profileErrors(username, "", password, confirmPassword, email, dob)
 
     if not errors:
         print("Sign up success")
         Connector.createUser(username, password, email, dob)
     return render_template("RegistrationCheck.html", errors=errors)
 
+#Profile editing page with no errors the first time, fields are filled in with user's current information
 @profile_bp.route("/profile")
 def profile_page():
     if currentUser.id is None:
@@ -140,9 +125,10 @@ def profile_page():
         pronouns = "" if Connector.getUserById(currentUser.id)[5] is None else Connector.getUserById(currentUser.id)[5]
         desc = "" if Connector.getUserById(currentUser.id)[6] is None else Connector.getUserById(currentUser.id)[6]
         return render_template("Profile.html", username=username, password=password, email=email, dob=dob, pronouns=pronouns, desc=desc)
-    
+
+#Edit user with the given information, and reload page with a message saying whether or not edit was successful
 @profile_bp.route("/editprofile", methods=["POST"])
-def edit_profile():   #todo, refactor
+def edit_profile():
     if currentUser.id is None:
         return redirect(url_for("login.login_page"))
     else:
@@ -154,24 +140,8 @@ def edit_profile():   #todo, refactor
         pronouns = request.form["pronouns"]
         desc = request.form["desc"]
 
-        errors = []
-
-        nameConfirm = Validator.validateNames(username)
-        if nameConfirm != None: #no error if None
-            errors.append(nameConfirm + username)   #returns whether too long or short
-        
         oldUsername = Connector.getUserById(currentUser.id)[1]
-        if username != oldUsername and username in Connector.getUsers():
-            errors.append("Username is already taken: " + username)
-    
-        if password != confirmPassword:
-            errors.append("Passwords do not match.")
-
-        if not Validator.validateEmail(email):
-            errors.append("Invalid email: " + email)
-
-        if not Validator.validateAge(dob):
-            errors.append("Your age is too young: " + dob)
+        errors = profileErrors(username, oldUsername, password, confirmPassword, email, dob)
 
         if not errors:
             Connector.editUser(currentUser.id, username, password, email, dob, pronouns, desc)
@@ -182,13 +152,35 @@ def edit_profile():   #todo, refactor
             dob = Connector.getUserById(currentUser.id)[4]
             pronouns = "" if Connector.getUserById(currentUser.id)[5] is None else Connector.getUserById(currentUser.id)[5]
             desc = "" if Connector.getUserById(currentUser.id)[6] is None else Connector.getUserById(currentUser.id)[6]
-            return render_template("ProfileCheck.html", username=username, password=password, email=email, dob=dob, pronouns=pronouns, desc=desc, errors=errors)
-        else:
-            return redirect(url_for("login.login_page"))
+        return render_template("ProfileCheck.html", username=username, password=password, email=email, dob=dob, pronouns=pronouns, desc=desc, errors=errors)
+
+#Helper method to record registration/profile editing errors
+def profileErrors(username, oldUsername, password, confirmPassword, email, dob):
+    errors = []
+
+    nameConfirm = Validator.validateNames(username)
+    if nameConfirm != None: #no error if None
+        errors.append(nameConfirm + username)   #returns whether too long or short
+        
+    if username != oldUsername and username in Connector.getUsers():
+        errors.append("Username is already taken: " + username)
+    
+    if password != confirmPassword:
+        errors.append("Passwords do not match.")
+
+    if not Validator.validateEmail(email):
+        errors.append("Invalid email: " + email)
+
+    if not Validator.validateAge(dob):
+        errors.append("Your age is too young: " + dob)
+    
+    return errors
 
 
 
-#Server page
+#---Server page---
+
+#Main server page with list of your channels and all members on the server
 @server_bp.route("/server")
 def server_page():
     if currentUser.id is None:
@@ -198,7 +190,8 @@ def server_page():
         users = Connector.getUsers()
         channels = Connector.getYourChannels(currentUser.id)
         return render_template("Server.html", username=username, users=users, channels=channels)
-    
+
+#Only show channels matching the search query
 @server_bp.route("/search_channel", methods=["POST"])
 def search_channel():
     if currentUser.id is None:
@@ -210,7 +203,8 @@ def search_channel():
         channels = Connector.searchChannelsByName(currentUser.id, channelName)
         message = "Returned channels matching search query: " + channelName + "."
         return render_template("ServerCheck.html", username=username, users=users, channels=channels, message=message)
-    
+
+#Add a channel, set yourself as a member and admin, and update the channel list
 @server_bp.route("/create_channel", methods=["POST"])
 def create_channel():
     if currentUser.id is None:
@@ -233,6 +227,7 @@ def create_channel():
         channels = Connector.getYourChannels(currentUser.id)
         return render_template("ServerCheck.html", username=username, users=users, channels=channels, message=message)
 
+#Delete a channel, remove yourself as a member and admin, and update the channel list
 @server_bp.route("/delete_channel", methods=["POST"])
 def delete_channel():
     if currentUser.id is None:
@@ -258,7 +253,8 @@ def delete_channel():
 
         channels = Connector.getYourChannels(currentUser.id)
         return render_template("ServerCheck.html", username=username, users=users, channels=channels, message=message)
-    
+
+#Add the given user to the given channel, which will appear in their channel list
 @server_bp.route("/add_user", methods=["POST"])
 def add_user():
     if currentUser.id is None:
@@ -289,7 +285,9 @@ def add_user():
     
 
 
-#Channel page
+#---Channel page---
+
+#Channel page with messages and list of members grouped by admin and non-admin
 @channel_bp.route("/channel", methods=["POST"])
 def index_page():
     if currentUser.id is None:
@@ -304,7 +302,8 @@ def index_page():
             admins = Connector.getAdminsOfChannel(channelInfo[0])
             users = Connector.getNonAdminsOfChannel(channelInfo[0])
             return render_template("Channel.html", username=username, channel=channel, admins=admins, users=users)
-        
+
+#Remove the given user from this channel, but only if you are an admin
 @channel_bp.route("/kick", methods=["POST"])
 def kick():
     if currentUser.id is None:
@@ -321,7 +320,7 @@ def kick():
         elif userInfo is None:
             message = "User " + userToKick + " does not exist in this channel."
         elif userInfo[0] == currentUser.id:
-            message = "Cannot kick yourself. To leave this channel, please do so from the Server page."
+            message = "Cannot kick yourself. To leave this channel, please do so from the Server page." #TODO: Add method to leave a channel
         else:
             adminStatus = Connector.getAdminById(currentUser.id, channelInfo[0])
             if adminStatus is None:
@@ -335,6 +334,7 @@ def kick():
         users = Connector.getNonAdminsOfChannel(channelInfo[0])
         return render_template("ChannelCheck.html", username=username, channel=channel, admins=admins, users=users, message=message)
 
+#Unset the given user as an admin, but only if you are an admin and are not unsetting yourself when you are the only admin
 @channel_bp.route("/remove_admin", methods=["POST"])
 def remove_admin():
     if currentUser.id is None:
@@ -364,6 +364,7 @@ def remove_admin():
         users = Connector.getNonAdminsOfChannel(channelInfo[0])
         return render_template("ChannelCheck.html", username=username, channel=channel, admins=admins, users=users, message=message)
 
+#Set the given user as an admin, but only if you are an admin
 @channel_bp.route("/add_admin", methods=["POST"])
 def add_admin():
     if currentUser.id is None:
@@ -392,6 +393,8 @@ def add_admin():
         return render_template("ChannelCheck.html", username=username, channel=channel, admins=admins, users=users, message=message)
 
 
+
+#TODO: These functions will either be deprecated or incorporated into the channel page for more convenient access:
 
 # Routes and functionalities for admin module
 @admin_bp.route("/admin")
@@ -437,25 +440,10 @@ def process_user_admin():
         print("Received username:", username)
         return "Received username: " + username
 
-
-# Routes and functionalities for login module
-
-
-
-
-
-
 def invoke_pageAdmin():
     with current_app.test_request_context():
         response = current_app.test_client().get("/admin")
         return response
-
-
-
-
-
-
-
 
 @server_bp.route("/CreateServer", methods=["POST"])
 def create_server():
@@ -466,7 +454,6 @@ def create_server():
     else:
         print("Created Server: ", serverName)
         return "Created Server: " + serverName
-
 
 @server_bp.route("/DeleteServer", methods=["POST"])
 def delete_server():
