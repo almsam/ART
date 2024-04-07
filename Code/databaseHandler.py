@@ -35,22 +35,44 @@ class databaseHandler:
             return users
 
     def getUserById(self, id: int):
-        userInfo = None
-        try:
-            ARTdb = self.openDatabaseConnection()
-            cursor = ARTdb.cursor()
-            query = "SELECT * from User WHERE id = %s"
-            cursor.execute(query, (id,))
+        if (self.Validator.validateInt(id)):
+            userInfo = None
+            try:
+                ARTdb = self.openDatabaseConnection()
+                cursor = ARTdb.cursor()
+                query = "SELECT * from User WHERE id = %s"
+                cursor.execute(query, (id,))
 
-            for user in cursor:
-                userInfo = user
+                for user in cursor:
+                    userInfo = user
 
-            cursor.close()
-        except mysql.connector.Error as err:
-            print(err)
-        finally:
-            ARTdb.close()
-            return userInfo
+                cursor.close()
+            except mysql.connector.Error as err:
+                print(err)
+            finally:
+                ARTdb.close()
+                return userInfo
+        return None
+    
+    def getUserByName(self, name: str):
+        if (self.Validator.validateNames(name) is None):
+            userInfo = None
+            try:
+                ARTdb = self.openDatabaseConnection()
+                cursor = ARTdb.cursor()
+                query = "SELECT * from User WHERE username = %s"
+                cursor.execute(query, (name,))
+
+                for user in cursor:
+                    userInfo = user
+
+                cursor.close()
+            except mysql.connector.Error as err:
+                print(err)
+            finally:
+                ARTdb.close()
+                return userInfo
+        return None
 
     def validateUser(self, username: str, password: str) -> bool:   #returns if username and password combination is in list of users
         if (self.Validator.validateNames(username) is None and self.Validator.validatePassword(password)):
@@ -112,7 +134,7 @@ class databaseHandler:
                 return validation   #returns whether a user was successfully edited
         return False
     
-    def getChannels(self):
+    def getAllChannels(self):
         channels = []
         try:
             ARTdb = self.openDatabaseConnection()
@@ -129,6 +151,25 @@ class databaseHandler:
         finally:
             ARTdb.close()
             return channels
+        
+    def getYourChannels(self, id: int):
+        channels = []
+        if (self.Validator.validateInt(id)):
+            try:
+                ARTdb = self.openDatabaseConnection()
+                cursor = ARTdb.cursor()
+                query = "SELECT Channel.name FROM Channel JOIN ChannelMember ON Channel.id = ChannelMember.channelId WHERE ChannelMember.userId = %s"
+                cursor.execute(query, (id,))
+
+                for channel in cursor:
+                    channels.append(channel[0])
+
+                cursor.close()
+            except mysql.connector.Error as err:
+                print(err)
+            finally:
+                ARTdb.close()
+        return channels
     
     def getChannelByName(self, name: str):
         channel = None
@@ -149,17 +190,17 @@ class databaseHandler:
                 ARTdb.close()
         return channel
         
-    def searchChannelsByName(self, name: str):
+    def searchChannelsByName(self, id: int, name: str):
         channels = []
-        if (self.Validator.validateNames(name) is None):
+        if (self.Validator.validateNames(name) is None and self.Validator.validateInt(id)):
             try:
                 ARTdb = self.openDatabaseConnection()
                 cursor = ARTdb.cursor()
-                query = "SELECT name FROM Channel WHERE name LIKE '%%s%'"
-                cursor.execute(query, (name,))
+                query = "SELECT Channel.name FROM Channel JOIN ChannelMember ON Channel.id = ChannelMember.channelId WHERE ChannelMember.userId = %s AND Channel.name LIKE '%%s%'"
+                cursor.execute(query, (id, name))
 
                 for channel in cursor:
-                    channels.append(channel[1])
+                    channels.append(channel[0])
 
                 cursor.close()
             except mysql.connector.Error as err:
@@ -206,6 +247,63 @@ class databaseHandler:
                 return validation
         return False
     
+    def getChannelMember(self, userId: int, channelId: int):
+        member = None
+        if (self.Validator.validateInt(userId) and self.Validator.validateInt(channelId)):
+            try:
+                ARTdb = self.openDatabaseConnection()
+                cursor = ARTdb.cursor()
+                query = "SELECT userId, channelId FROM ChannelMember WHERE userId = %s AND channelId = %s"
+                cursor.execute(query, (userId, channelId))
+
+                for m in cursor:
+                    member = m
+
+                cursor.close()
+            except mysql.connector.Error as err:
+                print(err)
+            finally:
+                ARTdb.close()
+        return member
+    
+    def addUserToChannel(self, userId: int, channelId: int):
+        if (self.Validator.validateInt(userId) and self.Validator.validateInt(channelId)):
+            try:
+                ARTdb = self.openDatabaseConnection()
+                cursor = ARTdb.cursor()
+                query = "INSERT INTO ChannelMember (userId, channelId) VALUES (%s, %s)"
+                cursor.execute(query, (userId, channelId))
+                ARTdb.commit()
+
+                cursor.close()
+                validation = True
+            except mysql.connector.Error as err:
+                print(err)
+                validation = False
+            finally:
+                ARTdb.close()
+                return validation
+        return False
+    
+    def removeUserFromChannel(self, userId: int, channelId: int):
+        if (self.Validator.validateInt(userId) and self.Validator.validateInt(channelId)):
+            try:
+                ARTdb = self.openDatabaseConnection()
+                cursor = ARTdb.cursor()
+                query = "DELETE FROM ChannelMember WHERE userId = %s AND channelId = %s"
+                cursor.execute(query, (userId, channelId))
+                ARTdb.commit()
+
+                cursor.close()
+                validation = True
+            except mysql.connector.Error as err:
+                print(err)
+                validation = False
+            finally:
+                ARTdb.close()
+                return validation
+        return False
+    
     def getAdminById(self, userId: int, channelId: int):
         admin = None
         if (self.Validator.validateInt(userId) and self.Validator.validateInt(channelId)):
@@ -224,7 +322,7 @@ class databaseHandler:
             finally:
                 ARTdb.close()
         return admin
-    
+
     def addAdmin(self, userId: int, channelId: int):
         if (self.Validator.validateInt(userId) and self.Validator.validateInt(channelId)):
             try:

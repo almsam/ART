@@ -36,7 +36,12 @@
 <h1>Channels:</h1>
 {% if channels|length > 0 %}
     {% for channel in channels %}
-        <p>{{channel}}</p>
+        <h3>{{channel}}</h3>
+        <form action="/add_user" method="POST">
+            <input type="hidden" id="channel" name="channel" value="{{channel}}">
+            <input type="text" id="userToAdd" name="userToAdd" required>
+            <button id="addUser">Add User</button>
+        </form>
     {% endfor %}
 {% endif %}
 

@@ -189,8 +189,7 @@ def server_page():
     else:
         username = Connector.getUserById(currentUser.id)[1]
         users = Connector.getUsers()
-
-        channels = Connector.getChannels()
+        channels = Connector.getYourChannels(currentUser.id)
         return render_template("Server.html", username=username, users=users, channels=channels)
     
 @server_bp.route("/search_channel", methods=["POST"])
@@ -200,9 +199,8 @@ def search_channel():
     else:
         username = Connector.getUserById(currentUser.id)[1]
         users = Connector.getUsers()
-
         channelName = request.form["channelName"]
-        channels = Connector.searchChannelsByName(channelName)
+        channels = Connector.searchChannelsByName(currentUser.id, channelName)
         message = "Returned channels matching search query: " + channelName + "."
         return render_template("ServerCheck.html", username=username, users=users, channels=channels, message=message)
     
@@ -213,18 +211,19 @@ def create_channel():
     else:
         username = Connector.getUserById(currentUser.id)[1]
         users = Connector.getUsers()
-
         channelName = request.form["channelName"]
-        channels = Connector.getChannels()
+        channels = Connector.getAllChannels()
 
         if channelName in channels:
             message = "Channel " + channelName + " already exists."
         else:
             Connector.createChannel(channelName)
             channelId = Connector.getChannelByName(channelName)[0]
+            Connector.addUserToChannel(currentUser.id, channelId)
             Connector.addAdmin(currentUser.id, channelId)
-            channels = Connector.getChannels()
             message = "Channel " + channelName + " successfully created. You are now the admin of this channel."
+
+        channels = Connector.getYourChannels(currentUser.id)
         return render_template("ServerCheck.html", username=username, users=users, channels=channels, message=message)
 
 @server_bp.route("/delete_channel", methods=["POST"])
@@ -234,22 +233,51 @@ def delete_channel():
     else:
         username = Connector.getUserById(currentUser.id)[1]
         users = Connector.getUsers()
-
         channelName = request.form["channelName"]
-        channels = Connector.getChannels()
+        channels = Connector.getAllChannels()
         channelInfo = Connector.getChannelByName(channelName)
         
-        if channelName not in channels:
+        if channelInfo is None:
             message = "Channel " + channelName + " does not exist."
-        elif channelInfo is not None:
+        else:
             adminStatus = Connector.getAdminById(currentUser.id, channelInfo[0])
             if adminStatus is None:
                 message = "Cannot delete " + channelName + " as you are not an admin of this channel."
             else:
+                Connector.removeUserFromChannel(currentUser.id, channelInfo[0])
                 Connector.removeAdmin(currentUser.id, channelInfo[0])
                 Connector.deleteChannel(channelName)
-                channels = Connector.getChannels()
                 message = "Channel " + channelName + " successfully deleted."
+
+        channels = Connector.getYourChannels(currentUser.id)
+        return render_template("ServerCheck.html", username=username, users=users, channels=channels, message=message)
+    
+@server_bp.route("/add_user", methods=["POST"])
+def add_user():
+    if currentUser.id is None:
+        return redirect(url_for("login.login_page"))
+    else:
+        username = Connector.getUserById(currentUser.id)[1]
+        users = Connector.getUsers()
+        userToAdd = request.form["userToAdd"]
+        userInfo = Connector.getUserByName(userToAdd)
+        channelName = request.form["channel"]
+        channelInfo = Connector.getChannelByName(channelName)
+        channels = Connector.getAllChannels()
+
+        if channelInfo is None:
+            message = "Channel " + channelName + " does not exist."
+        elif userInfo is None:
+            message = "User " + userToAdd + " does not exist."
+        else:
+            currentMember = Connector.getChannelMember(userInfo[0], channelInfo[0])
+            if currentMember is not None:
+                message = "User " + userToAdd + " is already a member of this channel."
+            else:
+                Connector.addUserToChannel(userInfo[0], channelInfo[0])
+                message = "User " + userToAdd + " successfully added to channel " + channelName + "."
+        
+        channels = Connector.getYourChannels(currentUser.id)
         return render_template("ServerCheck.html", username=username, users=users, channels=channels, message=message)
     
 
