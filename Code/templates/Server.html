@@ -11,8 +11,8 @@
 {% endblock %}
 
 {% block body %}
-<form>
-    <input type="text" id="ChannelName" required>
+<form method="POST">
+    <input type="text" id="channelName" name="channelName" required>
     <button id="searchChannelName" formaction="/search_channel">Search Channel Name</button>
     <button id="CreateChannel" formaction="/create_channel">Create Channel</button>
     <button id="DeleteChannel" formaction="/delete_channel">Delete Channel</button>
@@ -30,10 +30,20 @@
         clear:both;
     }
 </style>
-<h2>Members:</h2>
+
+{% block check %}{% endblock %}
+
+<h1>Channels:</h1>
+{% if channels|length > 0 %}
+    {% for channel in channels %}
+        <p>{{channel}}</p>
+    {% endfor %}
+{% endif %}
+
+<h1>Server Members:</h1>
 {% if users|length > 0 %}
     {% for user in users %}
-        <h4>{{user}}</h4>
+        <p>{{user}}</p>
     {% endfor %}
 {% endif %}
 {% endblock %}

@@ -111,3 +111,154 @@ class databaseHandler:
                 ARTdb.close()
                 return validation   #returns whether a user was successfully edited
         return False
+    
+    def getChannels(self):
+        channels = []
+        try:
+            ARTdb = self.openDatabaseConnection()
+            cursor = ARTdb.cursor()
+            query = "SELECT name FROM Channel"
+            cursor.execute(query)
+
+            for channel in cursor:
+                channels.append(channel[0])
+
+            cursor.close()
+        except mysql.connector.Error as err:
+            print(err)
+        finally:
+            ARTdb.close()
+            return channels
+    
+    def getChannelByName(self, name: str):
+        channel = None
+        if (self.Validator.validateNames(name) is None):
+            try:
+                ARTdb = self.openDatabaseConnection()
+                cursor = ARTdb.cursor()
+                query = "SELECT id, name FROM Channel WHERE name = %s"
+                cursor.execute(query, (name,))
+
+                for c in cursor:
+                    channel = c
+
+                cursor.close()
+            except mysql.connector.Error as err:
+                print(err)
+            finally:
+                ARTdb.close()
+        return channel
+        
+    def searchChannelsByName(self, name: str):
+        channels = []
+        if (self.Validator.validateNames(name) is None):
+            try:
+                ARTdb = self.openDatabaseConnection()
+                cursor = ARTdb.cursor()
+                query = "SELECT name FROM Channel WHERE name LIKE '%%s%'"
+                cursor.execute(query, (name,))
+
+                for channel in cursor:
+                    channels.append(channel[1])
+
+                cursor.close()
+            except mysql.connector.Error as err:
+                print(err)
+            finally:
+                ARTdb.close()
+        return channels
+        
+    def createChannel(self, name: str):
+        if (self.Validator.validateNames(name) is None):
+            try:
+                ARTdb = self.openDatabaseConnection()
+                cursor = ARTdb.cursor()
+                query = "INSERT INTO Channel (name) VALUES (%s)"
+                cursor.execute(query, (name,))
+                ARTdb.commit()
+
+                cursor.close()
+                validation = True
+            except mysql.connector.Error as err:
+                print(err)
+                validation = False
+            finally:
+                ARTdb.close()
+                return validation
+        return False
+    
+    def deleteChannel(self, name: str):
+        if (self.Validator.validateNames(name) is None):
+            try:
+                ARTdb = self.openDatabaseConnection()
+                cursor = ARTdb.cursor()
+                query = "DELETE FROM Channel WHERE name = %s"
+                cursor.execute(query, (name,))
+                ARTdb.commit()
+
+                cursor.close()
+                validation = True
+            except mysql.connector.Error as err:
+                print(err)
+                validation = False
+            finally:
+                ARTdb.close()
+                return validation
+        return False
+    
+    def getAdminById(self, userId: int, channelId: int):
+        admin = None
+        if (self.Validator.validateInt(userId) and self.Validator.validateInt(channelId)):
+            try:
+                ARTdb = self.openDatabaseConnection()
+                cursor = ARTdb.cursor()
+                query = "SELECT * FROM Admins WHERE userId = %s AND channelId = %s"
+                cursor.execute(query, (userId, channelId))
+
+                for a in cursor:
+                    admin = a
+
+                cursor.close()
+            except mysql.connector.Error as err:
+                print(err)
+            finally:
+                ARTdb.close()
+        return admin
+    
+    def addAdmin(self, userId: int, channelId: int):
+        if (self.Validator.validateInt(userId) and self.Validator.validateInt(channelId)):
+            try:
+                ARTdb = self.openDatabaseConnection()
+                cursor = ARTdb.cursor()
+                query = "INSERT INTO Admins (userId, channelId) VALUES (%s, %s)"
+                cursor.execute(query, (userId, channelId))
+                ARTdb.commit()
+
+                cursor.close()
+                validation = True
+            except mysql.connector.Error as err:
+                print(err)
+                validation = False
+            finally:
+                ARTdb.close()
+                return validation
+        return False
+    
+    def removeAdmin(self, userId: int, channelId: int):
+        if (self.Validator.validateInt(userId) and self.Validator.validateInt(channelId)):
+            try:
+                ARTdb = self.openDatabaseConnection()
+                cursor = ARTdb.cursor()
+                query = "DELETE FROM Admins WHERE userId = %s AND channelId = %s"
+                cursor.execute(query, (userId, channelId))
+                ARTdb.commit()
+
+                cursor.close()
+                validation = True
+            except mysql.connector.Error as err:
+                print(err)
+                validation = False
+            finally:
+                ARTdb.close()
+                return validation
+        return False

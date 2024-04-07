@@ -14,19 +14,21 @@ profilePicture BLOB,
 Primary key (id)
 );
 
-create table Servers (
-id int AUTO_INCREMENT,
-name varchar(64),
-serverPicture BLOB,
-Primary key (id)
-);
+-- We are only using one server, so we will not be using this table or any references to this table from other tables
+-- create table Servers (
+-- id int AUTO_INCREMENT,
+-- name varchar(64),
+-- serverPicture BLOB,
+-- Primary key (id)
+-- );
 
 create table Channel (
 id int AUTO_INCREMENT,
-serverId int,
+-- serverId int,
 name varchar(64),
-Foreign key (serverId) references Servers(id),
-Primary key (id, serverId)
+-- Foreign key (serverId) references Servers(id),
+-- Primary key (id, serverId)
+Primary key (id)
 );
 
 create table Friends (
@@ -39,38 +41,42 @@ primary key (userId,friendId)
 
 create table Admins (
 userId int,
-serverId int,
+channelId int,
+-- serverId int,
 foreign key (userId) references User(id),
-foreign key (serverId) references Servers(id),
+-- foreign key (serverId) references Servers(id),
 foreign key (channelId) references Channel(id),
-primary key (userId,serverId)
+-- primary key (userId,serverId)
+primary key (userId,channelId)
 );
 
-create table ServerMember (
-userId int,
-serverId int,
-foreign key (userId) references User(id),
-foreign key (serverId) references Servers(id),
-primary key (userId,serverId)
-);
+-- create table ServerMember (
+-- userId int,
+-- serverId int,
+-- foreign key (userId) references User(id),
+-- foreign key (serverId) references Servers(id),
+-- primary key (userId,serverId)
+-- );
 
 create table ChannelMember (
 userId int,
-serverId int,
+-- serverId int,
 channelId int,
 foreign key (userId) references User(id),
-foreign key (serverId) references Channel(serverId),
+-- foreign key (serverId) references Channel(serverId),
 foreign key (channelId) references Channel(id),
-primary key (userId,serverId)
+-- primary key (userId,serverId)
+primary key (userId,channelId)
 );
 
 create table Message (
 userId int,
 messageTime DateTime,
 channelId int,
-serverId int,
+-- serverId int,
 foreign key (userId) references User(id),
 foreign key (channelId) references Channel(id),
-foreign key (serverId) references Servers(id),
-primary key (messageTime,channelId,serverId)
+-- foreign key (serverId) references Servers(id),
+-- primary key (messageTime,channelId,serverId)
+primary key (messageTime,channelId)
 );

@@ -67,7 +67,6 @@ def logout():
     currentUser.id = None
     return redirect(url_for("login.login_page"))
 
-
 def authenticate(UN, PW) -> bool:
     return Connector.validateUser(UN, PW)
 
@@ -79,52 +78,48 @@ def signup_page():
     errors = None
     return render_template("Registration.html", errors=errors)
 
-
 @signup_bp.route("/signup", methods=["POST"])
 def signup():
-    if currentUser.id is None:
-        return redirect(url_for("login.login_page"))
-    else:
-        username = request.form["username"]
-        password = request.form["password"]
-        confirmPassword = request.form["confirmPassword"]
-        email = request.form["email"]
-        dob = request.form["dob"]
-        print(
-            "Received username:",
-            username,
-            " password*2: ",
-            password,
-            confirmPassword,
-            " email: ",
-            email,
-            " dob: ",
-            dob,
-        )
-        print("attempting to authenticate:")
+    username = request.form["username"]
+    password = request.form["password"]
+    confirmPassword = request.form["confirmPassword"]
+    email = request.form["email"]
+    dob = request.form["dob"]
+    print(
+        "Received username:",
+        username,
+        " password*2: ",
+        password,
+        confirmPassword,
+        " email: ",
+        email,
+        " dob: ",
+        dob,
+    )
+    print("attempting to authenticate:")
 
-        errors = []
+    errors = []
 
-        nameConfirm = Validator.validateNames(username)
-        if nameConfirm != None: #no error if None
-            errors.append(nameConfirm + username)   #returns whether too long or short
+    nameConfirm = Validator.validateNames(username)
+    if nameConfirm != None: #no error if None
+        errors.append(nameConfirm + username)   #returns whether too long or short
 
-        if username in Connector.getUsers():
-            errors.append("Username is already taken: " + username)
+    if username in Connector.getUsers():
+        errors.append("Username is already taken: " + username)
         
-        if password != confirmPassword:
-            errors.append("Passwords do not match.")
+    if password != confirmPassword:
+        errors.append("Passwords do not match.")
 
-        if not Validator.validateEmail(email):
-            errors.append("Invalid email: " + email)
+    if not Validator.validateEmail(email):
+        errors.append("Invalid email: " + email)
 
-        if not Validator.validateAge(dob):
-            errors.append("Your age is too young: " + dob)
+    if not Validator.validateAge(dob):
+        errors.append("Your age is too young: " + dob)
 
-        if not errors:
-            print("Sign up success")
-            Connector.createUser(username, password, email, dob)
-        return render_template("RegistrationCheck.html", errors=errors)
+    if not errors:
+        print("Sign up success")
+        Connector.createUser(username, password, email, dob)
+    return render_template("RegistrationCheck.html", errors=errors)
 
 @profile_bp.route("/profile")
 def profile_page():
@@ -186,7 +181,7 @@ def edit_profile():   #todo, refactor
 
 
 
-#Server
+#Server page
 @server_bp.route("/server")
 def server_page():
     if currentUser.id is None:
@@ -194,29 +189,69 @@ def server_page():
     else:
         username = Connector.getUserById(currentUser.id)[1]
         users = Connector.getUsers()
-        return render_template("Server.html", username=username, users=users)
 
+        channels = Connector.getChannels()
+        return render_template("Server.html", username=username, users=users, channels=channels)
+    
+@server_bp.route("/search_channel", methods=["POST"])
+def search_channel():
+    if currentUser.id is None:
+        return redirect(url_for("login.login_page"))
+    else:
+        username = Connector.getUserById(currentUser.id)[1]
+        users = Connector.getUsers()
 
-@server_bp.route("/CreateChannel", methods=["POST"])
+        channelName = request.form["channelName"]
+        channels = Connector.searchChannelsByName(channelName)
+        message = "Returned channels matching search query: " + channelName + "."
+        return render_template("ServerCheck.html", username=username, users=users, channels=channels, message=message)
+    
+@server_bp.route("/create_channel", methods=["POST"])
 def create_channel():
-    channelName = request.form.get("ChannelName")
-    if not channelName:
-        print("Please name the channel.")
-        return "Please name the channel."
+    if currentUser.id is None:
+        return redirect(url_for("login.login_page"))
     else:
-        print("Created Channel: ", channelName)
-        return "Created Channel: " + channelName
+        username = Connector.getUserById(currentUser.id)[1]
+        users = Connector.getUsers()
 
+        channelName = request.form["channelName"]
+        channels = Connector.getChannels()
 
-@server_bp.route("/DeleteChannel", methods=["POST"])
+        if channelName in channels:
+            message = "Channel " + channelName + " already exists."
+        else:
+            Connector.createChannel(channelName)
+            channelId = Connector.getChannelByName(channelName)[0]
+            Connector.addAdmin(currentUser.id, channelId)
+            channels = Connector.getChannels()
+            message = "Channel " + channelName + " successfully created. You are now the admin of this channel."
+        return render_template("ServerCheck.html", username=username, users=users, channels=channels, message=message)
+
+@server_bp.route("/delete_channel", methods=["POST"])
 def delete_channel():
-    channelName = request.form.get("ChannelName")
-    if not channelName:
-        print("Please name the target channel.")
-        return "Please name the target channel."
+    if currentUser.id is None:
+        return redirect(url_for("login.login_page"))
     else:
-        print("Deleted Channel: ", channelName)
-        return "Deleted Channel: " + channelName
+        username = Connector.getUserById(currentUser.id)[1]
+        users = Connector.getUsers()
+
+        channelName = request.form["channelName"]
+        channels = Connector.getChannels()
+        channelInfo = Connector.getChannelByName(channelName)
+        
+        if channelName not in channels:
+            message = "Channel " + channelName + " does not exist."
+        elif channelInfo is not None:
+            adminStatus = Connector.getAdminById(currentUser.id, channelInfo[0])
+            if adminStatus is None:
+                message = "Cannot delete " + channelName + " as you are not an admin of this channel."
+            else:
+                Connector.removeAdmin(currentUser.id, channelInfo[0])
+                Connector.deleteChannel(channelName)
+                channels = Connector.getChannels()
+                message = "Channel " + channelName + " successfully deleted."
+        return render_template("ServerCheck.html", username=username, users=users, channels=channels, message=message)
+    
 
 
 
