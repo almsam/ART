@@ -282,6 +282,32 @@ def add_user():
         
         channels = Connector.getYourChannels(currentUser.id)
         return render_template("ServerCheck.html", username=username, users=users, channels=channels, message=message)
+
+#Remove yourself from a channel and update the channel list
+@server_bp.route("/leave_channel", methods=["POST"])
+def leave_channel():
+    if currentUser.id is None:
+        return redirect(url_for("login.login_page"))
+    else:
+        username = Connector.getUserById(currentUser.id)[1]
+        users = Connector.getUsers()
+        channelName = request.form["channel"]
+        channelInfo = Connector.getChannelByName(channelName)
+
+        if channelInfo is None:
+            message = "Channel " + channelName + " does not exist."
+        else:
+            admins = Connector.getAdminsOfChannel(channelInfo[0])
+            print(admins)
+            if len(admins) == 1 and username in admins:
+                message = "Cannot leave this channel as you are the only admin of this channel."
+            else:
+                Connector.removeUserFromChannel(currentUser.id, channelInfo[0])
+                Connector.removeAdmin(currentUser.id, channelInfo[0])
+                message = "You have left the channel " + channelName + ". To rejoin, you must be added back in by a member of that channel."
+        
+        channels = Connector.getYourChannels(currentUser.id)
+        return render_template("ServerCheck.html", username=username, users=users, channels=channels, message=message)
     
 
 
