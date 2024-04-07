@@ -11,15 +11,25 @@
 {% endblock %}
 
 {% block body %}
-<input type="text" id="ChannelName"> <button id="subChannelName">Submit Channel Name</button>
-<button id="CreateChannel">Create Channel</button>
-<button id="DeleteChannel">Delete Channel</button>
+<form>
+    <input type="text" id="ChannelName" required>
+    <button id="searchChannelName" formaction="/search_channel">Search Channel Name</button>
+    <button id="CreateChannel" formaction="/create_channel">Create Channel</button>
+    <button id="DeleteChannel" formaction="/delete_channel">Delete Channel</button>
+</form>
 <form action="/profile">
     <button id="profile">Update Personal Info</button>
 </form>
 <form action="/logout" method="POST">
     <button id="logout">Log Out</button>
 </form>
+<style>
+    form {
+        font-size:15px;
+        display:inline-block;
+        clear:both;
+    }
+</style>
 <h2>Members:</h2>
 {% if users|length > 0 %}
     {% for user in users %}

@@ -26,11 +26,6 @@ profile_bp = Blueprint("profile", __name__)
 
 currentUser = loggedInUser()
 
-@login_bp.route("/")
-def login_page():
-    return render_template("LogIn.html")
-
-
 @login_bp.route("/goto_page/<page>")
 def goto_page(page):
     if page == "LogIn":
@@ -46,6 +41,183 @@ def goto_page(page):
     # Add more conditions for other pages as needed
     else:
         return "Page not found"
+
+
+#Login and logout
+@login_bp.route("/") #Main page is login page
+def login_page():
+    return render_template("LogIn.html")
+    
+@login_bp.route("/login", methods=["POST"])
+def login():
+    username = request.form["username"]
+    password = request.form["password"]
+    print("Username:", username)
+    print("Password:", password)
+    currentUser.id = authenticate(username, password)
+    if currentUser.id is not None:
+        print(currentUser.id)
+        return redirect(url_for("server.server_page"))
+    else:
+        print("Login fail")
+        return render_template("LogInFail.html")
+    
+@login_bp.route("/logout", methods=["POST"])
+def logout():
+    currentUser.id = None
+    return redirect(url_for("login.login_page"))
+
+
+def authenticate(UN, PW) -> bool:
+    return Connector.validateUser(UN, PW)
+
+
+
+#Registration and profile editing
+@signup_bp.route("/register", methods=["POST"])
+def signup_page():
+    errors = None
+    return render_template("Registration.html", errors=errors)
+
+
+@signup_bp.route("/signup", methods=["POST"])
+def signup():
+    if currentUser.id is None:
+        return redirect(url_for("login.login_page"))
+    else:
+        username = request.form["username"]
+        password = request.form["password"]
+        confirmPassword = request.form["confirmPassword"]
+        email = request.form["email"]
+        dob = request.form["dob"]
+        print(
+            "Received username:",
+            username,
+            " password*2: ",
+            password,
+            confirmPassword,
+            " email: ",
+            email,
+            " dob: ",
+            dob,
+        )
+        print("attempting to authenticate:")
+
+        errors = []
+
+        nameConfirm = Validator.validateNames(username)
+        if nameConfirm != None: #no error if None
+            errors.append(nameConfirm + username)   #returns whether too long or short
+
+        if username in Connector.getUsers():
+            errors.append("Username is already taken: " + username)
+        
+        if password != confirmPassword:
+            errors.append("Passwords do not match.")
+
+        if not Validator.validateEmail(email):
+            errors.append("Invalid email: " + email)
+
+        if not Validator.validateAge(dob):
+            errors.append("Your age is too young: " + dob)
+
+        if not errors:
+            print("Sign up success")
+            Connector.createUser(username, password, email, dob)
+        return render_template("RegistrationCheck.html", errors=errors)
+
+@profile_bp.route("/profile")
+def profile_page():
+    if currentUser.id is None:
+        return redirect(url_for("login.login_page"))
+    else:
+        username = Connector.getUserById(currentUser.id)[1]
+        password = Connector.getUserById(currentUser.id)[2]
+        email = Connector.getUserById(currentUser.id)[3]
+        dob = Connector.getUserById(currentUser.id)[4]
+        pronouns = "" if Connector.getUserById(currentUser.id)[5] is None else Connector.getUserById(currentUser.id)[5]
+        desc = "" if Connector.getUserById(currentUser.id)[6] is None else Connector.getUserById(currentUser.id)[6]
+        return render_template("Profile.html", username=username, password=password, email=email, dob=dob, pronouns=pronouns, desc=desc)
+    
+@profile_bp.route("/editprofile", methods=["POST"])
+def edit_profile():   #todo, refactor
+    if currentUser.id is None:
+        return redirect(url_for("login.login_page"))
+    else:
+        username = request.form["username"]
+        password = request.form["password"]
+        confirmPassword = request.form["confirmPassword"]
+        email = request.form["email"]
+        dob = request.form["dob"]
+        pronouns = request.form["pronouns"]
+        desc = request.form["desc"]
+
+        errors = []
+
+        nameConfirm = Validator.validateNames(username)
+        if nameConfirm != None: #no error if None
+            errors.append(nameConfirm + username)   #returns whether too long or short
+        
+        oldUsername = Connector.getUserById(currentUser.id)[1]
+        if username != oldUsername and username in Connector.getUsers():
+            errors.append("Username is already taken: " + username)
+    
+        if password != confirmPassword:
+            errors.append("Passwords do not match.")
+
+        if not Validator.validateEmail(email):
+            errors.append("Invalid email: " + email)
+
+        if not Validator.validateAge(dob):
+            errors.append("Your age is too young: " + dob)
+
+        if not errors:
+            Connector.editUser(currentUser.id, username, password, email, dob, pronouns, desc)
+
+            username = Connector.getUserById(currentUser.id)[1]
+            password = Connector.getUserById(currentUser.id)[2]
+            email = Connector.getUserById(currentUser.id)[3]
+            dob = Connector.getUserById(currentUser.id)[4]
+            pronouns = "" if Connector.getUserById(currentUser.id)[5] is None else Connector.getUserById(currentUser.id)[5]
+            desc = "" if Connector.getUserById(currentUser.id)[6] is None else Connector.getUserById(currentUser.id)[6]
+            return render_template("ProfileCheck.html", username=username, password=password, email=email, dob=dob, pronouns=pronouns, desc=desc, errors=errors)
+        else:
+            return redirect(url_for("login.login_page"))
+
+
+
+#Server
+@server_bp.route("/server")
+def server_page():
+    if currentUser.id is None:
+        return redirect(url_for("login.login_page"))
+    else:
+        username = Connector.getUserById(currentUser.id)[1]
+        users = Connector.getUsers()
+        return render_template("Server.html", username=username, users=users)
+
+
+@server_bp.route("/CreateChannel", methods=["POST"])
+def create_channel():
+    channelName = request.form.get("ChannelName")
+    if not channelName:
+        print("Please name the channel.")
+        return "Please name the channel."
+    else:
+        print("Created Channel: ", channelName)
+        return "Created Channel: " + channelName
+
+
+@server_bp.route("/DeleteChannel", methods=["POST"])
+def delete_channel():
+    channelName = request.form.get("ChannelName")
+    if not channelName:
+        print("Please name the target channel.")
+        return "Please name the target channel."
+    else:
+        print("Deleted Channel: ", channelName)
+        return "Deleted Channel: " + channelName
+
 
 
 @channel_bp.route("/channel")
@@ -116,28 +288,7 @@ def process_user():
     return "Received username: " + username + password
 
 
-@login_bp.route("/login", methods=["POST"])
-def login():
-    username = request.form["username"]
-    password = request.form["password"]
-    print("Username:", username)
-    print("Password:", password)
-    currentUser.id = authenticate(username, password)
-    if currentUser.id is not None:
-        print(currentUser.id)
-        return redirect(url_for("server.server_page"))
-    else:
-        print("Login fail")
-        return render_template("LogInFail.html")
-    
-@login_bp.route("/logout", methods=["POST"])
-def logout():
-    currentUser.id = None
-    return redirect(url_for("login.login_page"))
 
-
-def authenticate(UN, PW) -> bool:
-    return Connector.validateUser(UN, PW)
 
 
 def invoke_pageAdmin():
@@ -146,88 +297,10 @@ def invoke_pageAdmin():
         return response
 
 
-# Routes and functionalities for signup module
-@signup_bp.route("/register", methods=["POST"])
-def signup_page():
-    errors = None
-    return render_template("Registration.html", errors=errors)
 
 
-@signup_bp.route("/signup", methods=["POST"])
-def signup():
-    username = request.form["username"]
-    password = request.form["password"]
-    confirmPassword = request.form["confirmPassword"]
-    email = request.form["email"]
-    dob = request.form["dob"]
-    print(
-        "Received username:",
-        username,
-        " password*2: ",
-        password,
-        confirmPassword,
-        " email: ",
-        email,
-        " dob: ",
-        dob,
-    )
-    print("attempting to authenticate:")
-
-    errors = []
-
-    nameConfirm = Validator.validateNames(username)
-    if nameConfirm != None: #no error if None
-        errors.append(nameConfirm + username)   #returns whether too long or short
-
-    if username in Connector.getUsers():
-        errors.append("Username is already taken: " + username)
-    
-    if password != confirmPassword:
-        errors.append("Passwords do not match.")
-
-    if not Validator.validateEmail(email):
-        errors.append("Invalid email: " + email)
-
-    if not Validator.validateAge(dob):
-        errors.append("Your age is too young: " + dob)
-
-    if not errors:
-        print("Sign up success")
-        Connector.createUser(username, password, email, dob)
-    return render_template("RegistrationCheck.html", errors=errors)
 
 
-# Routes and functionalities for server module
-@server_bp.route("/server")
-def server_page():
-    if currentUser.id is None:
-        return redirect(url_for("login.login_page"))
-    else:
-        username = Connector.getUserById(currentUser.id)[1]
-        users = Connector.getUsers()
-        return render_template("Server.html", username=username, users=users)
-
-
-@server_bp.route("/CreateChannel", methods=["POST"])
-def create_channel():
-    channelName = request.form.get("ChannelName")
-    if not channelName:
-        print("Please name the channel.")
-        return "Please name the channel."
-    else:
-        print("Created Channel: ", channelName)
-        return "Created Channel: " + channelName
-
-
-@server_bp.route("/DeleteChannel", methods=["POST"])
-def delete_channel():
-    channelName = request.form.get("ChannelName")
-    if not channelName:
-        print("Please name the target channel.")
-        return "Please name the target channel."
-    else:
-        print("Deleted Channel: ", channelName)
-        return "Deleted Channel: " + channelName
 
 
 @server_bp.route("/CreateServer", methods=["POST"])
@@ -251,62 +324,7 @@ def delete_server():
         print("Deleted Server: ", serverName)
         return "Deleted Server: " + serverName
     
-# Routes and functionalities for edit profile module
-@profile_bp.route("/profile")
-def profile_page():
-    if currentUser.id is None:
-        return redirect(url_for("login.login_page"))
-    else:
-        username = Connector.getUserById(currentUser.id)[1]
-        password = Connector.getUserById(currentUser.id)[2]
-        email = Connector.getUserById(currentUser.id)[3]
-        dob = Connector.getUserById(currentUser.id)[4]
-        pronouns = "" if Connector.getUserById(currentUser.id)[5] is None else Connector.getUserById(currentUser.id)[5]
-        desc = "" if Connector.getUserById(currentUser.id)[6] is None else Connector.getUserById(currentUser.id)[6]
-        return render_template("Profile.html", username=username, password=password, email=email, dob=dob, pronouns=pronouns, desc=desc)
-    
-@profile_bp.route("/editprofile", methods=["POST"])
-def edit_profile():   #todo, refactor
-    if currentUser.id is not None:
-        username = request.form["username"]
-        password = request.form["password"]
-        confirmPassword = request.form["confirmPassword"]
-        email = request.form["email"]
-        dob = request.form["dob"]
-        pronouns = request.form["pronouns"]
-        desc = request.form["desc"]
 
-        errors = []
-
-        nameConfirm = Validator.validateNames(username)
-        if nameConfirm != None: #no error if None
-            errors.append(nameConfirm + username)   #returns whether too long or short
-        
-        oldUsername = Connector.getUserById(currentUser.id)[1]
-        if username != oldUsername and username in Connector.getUsers():
-            errors.append("Username is already taken: " + username)
-    
-        if password != confirmPassword:
-            errors.append("Passwords do not match.")
-
-        if not Validator.validateEmail(email):
-            errors.append("Invalid email: " + email)
-
-        if not Validator.validateAge(dob):
-            errors.append("Your age is too young: " + dob)
-
-        if not errors:
-            Connector.editUser(currentUser.id, username, password, email, dob, pronouns, desc)
-
-        username = Connector.getUserById(currentUser.id)[1]
-        password = Connector.getUserById(currentUser.id)[2]
-        email = Connector.getUserById(currentUser.id)[3]
-        dob = Connector.getUserById(currentUser.id)[4]
-        pronouns = "" if Connector.getUserById(currentUser.id)[5] is None else Connector.getUserById(currentUser.id)[5]
-        desc = "" if Connector.getUserById(currentUser.id)[6] is None else Connector.getUserById(currentUser.id)[6]
-        return render_template("ProfileCheck.html", username=username, password=password, email=email, dob=dob, pronouns=pronouns, desc=desc, errors=errors)
-    else:
-        return redirect(url_for("login.login_page"))
 
 
 # Register blueprints
