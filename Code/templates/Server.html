@@ -23,24 +23,21 @@
 <form action="/logout" method="POST">
     <button id="logout">Log Out</button>
 </form>
-<style>
-    form {
-        font-size:15px;
-        display:inline-block;
-        clear:both;
-    }
-</style>
 
 {% block check %}{% endblock %}
 
 <h1>Channels:</h1>
 {% if channels|length > 0 %}
     {% for channel in channels %}
-        <h3>{{channel}}</h3>
-        <form action="/add_user" method="POST">
+        <form method="POST">
+            <h2>{{channel}}</h2>
+            <input type="hidden" id="channel" name="channel" value="{{channel}}">
+            <button id="enterChannel" formaction="/channel">Enter Channel</button>
+        </form>
+        <form method="POST">
             <input type="hidden" id="channel" name="channel" value="{{channel}}">
             <input type="text" id="userToAdd" name="userToAdd" required>
-            <button id="addUser">Add User</button>
+            <button id="addUser" formaction="/add_user">Add User</button>
         </form>
     {% endfor %}
 {% endif %}

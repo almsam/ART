@@ -2,33 +2,13 @@
 
 {% block head %}
 <title>Discord Page</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-  }
-  #chat-container {
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    height: 300px;
-    overflow-y: scroll;
-    margin-bottom: 10px;
-  }
-  #message-box {
-    width: 100%;
-    padding: 5px;
-  }
-  #send-button {
-    padding: 5px 10px;
-    background-color: #7289da;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-</style>
+<link rel="stylesheet" href="../static/css/Channel.css">
 {% endblock %}
 
-{% block header %}{% endblock %}
+{% block header %}
+<h1>{{channel}}</h1>
+<h3>Logged in as: {{username}}</h3>
+{% endblock %}
 
 {% block body %}
 <div id="chat-container">
@@ -36,6 +16,34 @@
 </div>
 <input type="text" id="message-box" placeholder="Type your message..." />
 <button id="send-button">Send</button>
+<form action="/server">
+  <button id="goBack">Go Back to the Server Page</button>
+</form>
+
+{% block check %}{% endblock %}
+
+<h2>Admins:</h2>
+{% if admins|length > 0 %}
+    {% for admin in admins %}
+      <form action="/kick" method="POST">
+        <p>{{admin}}</p>
+        <input type="hidden" id="channel" name="channel" value="{{channel}}">
+        <input type="hidden" id="user" name="user" value="{{admin}}">
+        <button id="kick">Kick User</button>
+      </form>
+    {% endfor %}
+{% endif %}
+<h2>General Users:</h2>
+{% if users|length > 0 %}
+    {% for user in users %}
+        <p>{{user}}</p>
+        <form action="/kick" method="POST">
+          <input type="hidden" id="channel" name="channel" value="{{channel}}">
+          <input type="hidden" id="user" name="user" value="{{user}}">
+          <button id="kick">Kick User</button>
+        </form>
+    {% endfor %}
+{% endif %}
 
 <script>
   function sendMessage() {

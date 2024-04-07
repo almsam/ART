@@ -67,6 +67,13 @@ def logout():
     currentUser.id = None
     return redirect(url_for("login.login_page"))
 
+@login_bp.route("/process_user", methods=["POST"])
+def process_user():
+    username = request.form["username"]
+    password = request.form["password"]
+    print("Received username: ", username, password)
+    return "Received username: " + username + password
+
 def authenticate(UN, PW) -> bool:
     return Connector.validateUser(UN, PW)
 
@@ -282,53 +289,88 @@ def add_user():
     
 
 
-
-@channel_bp.route("/channel")
+#Channel page
+@channel_bp.route("/channel", methods=["POST"])
 def index_page():
-    return render_template("Channel.html")
+    if currentUser.id is None:
+        return redirect(url_for("login.login_page"))
+    else:
+        username = Connector.getUserById(currentUser.id)[1]
+        channel = request.form["channel"]
+        channelInfo = Connector.getChannelByName(channel)
+        if channelInfo is None:
+            return redirect(url_for("server.server_page"))
+        else:
+            admins = Connector.getAdminsOfChannel(channelInfo[0])
+            users = Connector.getNonAdminsOfChannel(channelInfo[0])
+            return render_template("Channel.html", username=username, channel=channel, admins=admins, users=users)
+        
+@channel_bp.route("/kick", methods=["POST"])
+def kick():
+    if currentUser.id is None:
+        return redirect(url_for("login.login_page"))
+    else:
+        username = Connector.getUserById(currentUser.id)[1]
+        channel = request.form["channel"]
+        channelInfo = Connector.getChannelByName(channel)
+        userToKick = request.form["user"]
+        userInfo = Connector.getUserByName(userToKick)
+
+        if channelInfo is None:
+            return redirect(url_for("server.server_page"))
+        elif userInfo is None:
+            message = "User " + userToKick + " does not exist in this channel."
+        elif userInfo[0] == currentUser.id:
+            message = "Cannot kick yourself. To leave this channel, please do so from the Server page."
+        else:
+            adminStatus = Connector.getAdminById(currentUser.id, channelInfo[0])
+            if adminStatus is None:
+                message = "Cannot kick this user as you are not an admin of this channel."
+            else:
+                Connector.removeUserFromChannel(userInfo[0], channelInfo[0])
+                Connector.removeAdmin(userInfo[0], channelInfo[0])
+                message = "User " + userToKick + " kicked successfully."
+        
+        admins = Connector.getAdminsOfChannel(channelInfo[0])
+        users = Connector.getNonAdminsOfChannel(channelInfo[0])
+        return render_template("ChannelCheck.html", username=username, channel=channel, admins=admins, users=users, message=message)
+
+
 
 # Routes and functionalities for admin module
 @admin_bp.route("/admin")
 def admin_page():
     return render_template("Admin.html")
 
-
 @admin_bp.route("/mute", methods=["POST"])
 def mute_user():
     print("Mute user function executed.")
     return "User muted successfully."
-
-
 
 @admin_bp.route("/unmute", methods=["POST"])
 def unmute_user():
     print("Unmute user function executed.")
     return "User unmuted successfully."
 
-
-@admin_bp.route("/kick", methods=["POST"])
-def kick_user():
-    print("Kick user function executed.")
-    return "User kicked successfully."
-
+#@admin_bp.route("/kick", methods=["POST"])
+#def kick_user():
+#    print("Kick user function executed.")
+#    return "User kicked successfully."
 
 @admin_bp.route("/ban", methods=["POST"])
 def ban_user():
     print("Ban user function executed.")
     return "User banned successfully."
 
-
 @admin_bp.route("/unban", methods=["POST"])
 def unban_user():
     print("Unban user function executed.")
     return "User unbanned successfully."
 
-
 @admin_bp.route("/edit_roles", methods=["POST"])
 def edit_user_roles():
     print("Edit user roles function executed.")
     return "User roles edited successfully."
-
 
 @admin_bp.route("/process_user_admin", methods=["POST"])
 def process_user_admin():
@@ -342,13 +384,6 @@ def process_user_admin():
 
 # Routes and functionalities for login module
 
-
-@login_bp.route("/process_user", methods=["POST"])
-def process_user():
-    username = request.form["username"]
-    password = request.form["password"]
-    print("Received username: ", username, password)
-    return "Received username: " + username + password
 
 
 
