@@ -42,6 +42,7 @@ userId int,
 serverId int,
 foreign key (userId) references User(id),
 foreign key (serverId) references Servers(id),
+foreign key (channelId) references Channel(id),
 primary key (userId,serverId)
 );
 
