@@ -335,6 +335,62 @@ def kick():
         users = Connector.getNonAdminsOfChannel(channelInfo[0])
         return render_template("ChannelCheck.html", username=username, channel=channel, admins=admins, users=users, message=message)
 
+@channel_bp.route("/remove_admin", methods=["POST"])
+def remove_admin():
+    if currentUser.id is None:
+        return redirect(url_for("login.login_page"))
+    else:
+        username = Connector.getUserById(currentUser.id)[1]
+        channel = request.form["channel"]
+        channelInfo = Connector.getChannelByName(channel)
+        userToUnset = request.form["user"]
+        userInfo = Connector.getUserByName(userToUnset)
+
+        if channelInfo is None:
+            return redirect(url_for("server.server_page"))
+        elif userInfo is None:
+            message = "User " + userToUnset + " does not exist in this channel."
+        else:
+            adminStatus = Connector.getAdminById(currentUser.id, channelInfo[0])
+            if adminStatus is None:
+                message = "Cannot unset this user as admin as you are not an admin of this channel."
+            elif len(Connector.getAdminsOfChannel(channelInfo[0])) == 1:
+                message = "Cannot unset yourself as admin as you are the only admin of this channel."
+            else:
+                Connector.removeAdmin(userInfo[0], channelInfo[0])
+                message = "User " + userToUnset + " has been unset as an admin."
+        
+        admins = Connector.getAdminsOfChannel(channelInfo[0])
+        users = Connector.getNonAdminsOfChannel(channelInfo[0])
+        return render_template("ChannelCheck.html", username=username, channel=channel, admins=admins, users=users, message=message)
+
+@channel_bp.route("/add_admin", methods=["POST"])
+def add_admin():
+    if currentUser.id is None:
+        return redirect(url_for("login.login_page"))
+    else:
+        username = Connector.getUserById(currentUser.id)[1]
+        channel = request.form["channel"]
+        channelInfo = Connector.getChannelByName(channel)
+        userToSet = request.form["user"]
+        userInfo = Connector.getUserByName(userToSet)
+
+        if channelInfo is None:
+            return redirect(url_for("server.server_page"))
+        elif userInfo is None:
+            message = "User " + userToSet + " does not exist in this channel."
+        else:
+            adminStatus = Connector.getAdminById(currentUser.id, channelInfo[0])
+            if adminStatus is None:
+                message = "Cannot set this user as admin as you are not an admin of this channel."
+            else:
+                Connector.addAdmin(userInfo[0], channelInfo[0])
+                message = "User " + userToSet + " has been set as an admin."
+        
+        admins = Connector.getAdminsOfChannel(channelInfo[0])
+        users = Connector.getNonAdminsOfChannel(channelInfo[0])
+        return render_template("ChannelCheck.html", username=username, channel=channel, admins=admins, users=users, message=message)
+
 
 
 # Routes and functionalities for admin module

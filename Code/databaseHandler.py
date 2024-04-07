@@ -324,23 +324,23 @@ class databaseHandler:
         return admins
     
     def getNonAdminsOfChannel(self, channelId: int):
-        admins = []
+        users = []
         if (self.Validator.validateInt(channelId)):
             try:
                 ARTdb = self.openDatabaseConnection()
                 cursor = ARTdb.cursor()
-                query = "SELECT User.username FROM User JOIN ChannelMember ON User.id = ChannelMember.userId JOIN Admins ON ChannelMember.channelId = Admins.channelId WHERE ChannelMember.channelId = %s AND User.id != Admins.userId ORDER BY User.username"
-                cursor.execute(query, (channelId,))
+                query = "SELECT User.username FROM User JOIN ChannelMember ON User.id = ChannelMember.userId WHERE ChannelMember.channelId = %s AND User.username NOT IN (SELECT User.username FROM User JOIN Admins ON User.id = Admins.userId WHERE Admins.channelId = %s) ORDER BY User.username"
+                cursor.execute(query, (channelId, channelId))
 
                 for m in cursor:
-                    admins.append(m[0])
+                    users.append(m[0])
 
                 cursor.close()
             except mysql.connector.Error as err:
                 print(err)
             finally:
                 ARTdb.close()
-        return admins
+        return users
     
     def getAdminById(self, userId: int, channelId: int):
         admin = None

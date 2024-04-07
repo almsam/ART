@@ -25,11 +25,12 @@
 <h2>Admins:</h2>
 {% if admins|length > 0 %}
     {% for admin in admins %}
-      <form action="/kick" method="POST">
+      <form method="POST">
         <p>{{admin}}</p>
         <input type="hidden" id="channel" name="channel" value="{{channel}}">
         <input type="hidden" id="user" name="user" value="{{admin}}">
-        <button id="kick">Kick User</button>
+        <button id="kick" formaction="/kick">Kick User</button>
+        <button id="removeAdmin" formaction="/remove_admin">Unset as Admin</button>
       </form>
     {% endfor %}
 {% endif %}
@@ -37,10 +38,11 @@
 {% if users|length > 0 %}
     {% for user in users %}
         <p>{{user}}</p>
-        <form action="/kick" method="POST">
+        <form method="POST">
           <input type="hidden" id="channel" name="channel" value="{{channel}}">
           <input type="hidden" id="user" name="user" value="{{user}}">
-          <button id="kick">Kick User</button>
+          <button id="kick" formaction="/kick">Kick User</button>
+          <button id="addAdmin" formaction="/add_admin">Set as Admin</button>
         </form>
     {% endfor %}
 {% endif %}
