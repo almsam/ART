@@ -38,6 +38,8 @@ def goto_page(page):
         return render_template("Server.html")
     elif page == "Channel":
         return render_template("Channel.html")
+    elif page == "Registration":
+        return render_template("Registration.html")
     # Add more conditions for other pages as needed
     else:
         return "Page not found"
