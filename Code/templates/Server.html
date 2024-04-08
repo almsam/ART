@@ -11,19 +11,42 @@
 {% endblock %}
 
 {% block body %}
-<input type="text" id="ChannelName"> <button id="subChannelName">Submit Channel Name</button>
-<button id="CreateChannel">Create Channel</button>
-<button id="DeleteChannel">Delete Channel</button>
+<form method="POST">
+    <input type="text" id="channelName" name="channelName" required>
+    <button id="searchChannelName" formaction="/search_channel">Search Channel Name</button>
+    <button id="CreateChannel" formaction="/create_channel">Create Channel</button>
+    <button id="DeleteChannel" formaction="/delete_channel">Delete Channel</button>
+</form>
 <form action="/profile">
     <button id="profile">Update Personal Info</button>
 </form>
 <form action="/logout" method="POST">
     <button id="logout">Log Out</button>
 </form>
-<h2>Members:</h2>
+
+{% block check %}{% endblock %}
+
+<h1>Channels:</h1>
+{% if channels|length > 0 %}
+    {% for channel in channels %}
+        <form method="POST">
+            <h2>{{channel}}</h2>
+            <input type="hidden" id="channel" name="channel" value="{{channel}}">
+            <button id="enterChannel" formaction="/channel">Enter Channel</button>
+            <button id="leaveChannel" formaction="/leave_channel">Leave Channel</button>
+        </form>
+        <form method="POST">
+            <input type="hidden" id="channel" name="channel" value="{{channel}}">
+            <input type="text" id="userToAdd" name="userToAdd" required>
+            <button id="addUser" formaction="/add_user">Add User</button>
+        </form>
+    {% endfor %}
+{% endif %}
+
+<h1>Server Members:</h1>
 {% if users|length > 0 %}
     {% for user in users %}
-        <h4>{{user}}</h4>
+        <p>{{user}}</p>
     {% endfor %}
 {% endif %}
 {% endblock %}
