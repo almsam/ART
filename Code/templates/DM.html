@@ -1,0 +1,12 @@
+{% extends 'Chat.html' %}
+
+{% block header %}
+<h1>Direct message with {{othername}}</h1>
+<h3>Logged in as: {{username}}</h3>
+<form action="/server">
+  <button id="goBack">Go Back to the Server Page</button>
+</form>
+<h1></h1>
+{% endblock %}
+
+{% block memberList %}{% endblock %}

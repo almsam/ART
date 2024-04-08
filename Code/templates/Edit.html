@@ -1,0 +1,63 @@
+{% extends 'Base.html' %}
+
+{% block head %}
+<title>Edit User Profile</title>
+<link rel="stylesheet" href="../static/css/Registration.css">
+<style>
+  .error {
+    color: red;
+  }
+</style>
+{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block body %}
+<header class="container">
+  <h1 class="heading">ART</h1>
+  <img src="../Images/icon.png" alt="redcanvas" class="icon" />
+</header>
+<h2>Edit Profile for {{username}}</h2>
+{% block check %}{% endblock %}
+<form action="/edited_profile" method="POST">
+  <div>
+    <label for="username">Username (Must be > 8 characters):</label>
+    <input type="text" id="username" name="username" value="{{username}}" required />
+  </div>
+  <div>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" value="{{password}}" required />
+  </div>
+  <div>
+    <label for="confirmPassword">Confirm Password:</label>
+    <input
+      type="password"
+      id="confirmPassword"
+      name="confirmPassword"
+      value="{{password}}"
+      required
+    />
+  </div>
+  <div>
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" value="{{email}}" required />
+  </div>
+  <div>
+    <label for="dob">Date of Birth (Must be at least 18 years old):</label>
+    <input type="date" id="dob" name="dob" value="{{dob}}" required />
+  </div>
+    <label for="pronouns">Pronouns:</label>
+    <input type="text" id="pronouns" name="pronouns" value="{{pronouns}}"/>
+  <div>
+  </div>
+    <label for="desc">Description:</label>
+    <input type="text" id="desc" name="desc" value="{{desc}}"/>
+  <div>
+    <button id="submit">Save Changes</button>
+  </div>
+</form>
+
+<form action="/server">
+  <button id="login">Go Back</button>
+</form>
+{% endblock %}

@@ -20,6 +20,7 @@ app = Flask(__name__)
 # Blueprint definitions
 admin_bp = Blueprint("admin", __name__)
 login_bp = Blueprint("login", __name__)
+edit_profile_bp = Blueprint("edit_profile", __name__)
 signup_bp = Blueprint("signup", __name__)
 server_bp = Blueprint("server", __name__)
 channel_bp = Blueprint("channel", __name__)
@@ -33,6 +34,8 @@ def goto_page(page):
         return render_template("LogIn.html")
     elif page == "SignUp":
         return render_template("SignUp.html")
+    elif page == "Edit":
+        return render_template("Edit.html")
     elif page == "Admin":
         return render_template("Admin.html")
     elif page == "Server":
@@ -116,8 +119,8 @@ def signup():
     return render_template("RegistrationCheck.html", errors=errors)
 
 #Profile editing page with no errors the first time, fields are filled in with user's current information
-@profile_bp.route("/profile")
-def profile_page():
+@edit_profile_bp.route("/edit_profile")
+def edit_profile_page():
     if currentUser.id is None:
         return redirect(url_for("login.login_page"))
     
@@ -127,10 +130,10 @@ def profile_page():
     dob = Connector.getUserById(currentUser.id)[4]
     pronouns = "" if Connector.getUserById(currentUser.id)[5] is None else Connector.getUserById(currentUser.id)[5]
     desc = "" if Connector.getUserById(currentUser.id)[6] is None else Connector.getUserById(currentUser.id)[6]
-    return render_template("Profile.html", username=username, password=password, email=email, dob=dob, pronouns=pronouns, desc=desc)
+    return render_template("Edit.html", username=username, password=password, email=email, dob=dob, pronouns=pronouns, desc=desc)
 
 #Edit user with the given information, and reload page with a message saying whether or not edit was successful
-@profile_bp.route("/editprofile", methods=["POST"])
+@edit_profile_bp.route("/edited_profile", methods=["POST"])
 def edit_profile():
     if currentUser.id is None:
         return redirect(url_for("login.login_page"))
@@ -155,7 +158,7 @@ def edit_profile():
         dob = Connector.getUserById(currentUser.id)[4]
         pronouns = "" if Connector.getUserById(currentUser.id)[5] is None else Connector.getUserById(currentUser.id)[5]
         desc = "" if Connector.getUserById(currentUser.id)[6] is None else Connector.getUserById(currentUser.id)[6]
-    return render_template("ProfileCheck.html", username=username, password=password, email=email, dob=dob, pronouns=pronouns, desc=desc, errors=errors)
+    return render_template("EditCheck.html", username=username, password=password, email=email, dob=dob, pronouns=pronouns, desc=desc, errors=errors)
 
 #Helper method to record registration/profile editing errors
 def profileErrors(username, oldUsername, password, confirmPassword, email, dob):
@@ -221,7 +224,7 @@ def create_channel():
     if channelName in channels:
         message = "Channel " + channelName + " already exists."
     else:
-        Connector.createChannel(channelName)
+        Connector.createChannel(channelName, 0)
         channelId = Connector.getChannelByName(channelName)[0]
         Connector.addUserToChannel(currentUser.id, channelId)
         Connector.addAdmin(currentUser.id, channelId)
@@ -311,7 +314,63 @@ def leave_channel():
     
     channels = Connector.getYourChannels(currentUser.id)
     return render_template("ServerCheck.html", username=username, users=users, channels=channels, message=message)
+
+
+
+#---Profile and direct messaging pages---
+
+#View the profile of another user
+@profile_bp.route("/profile", methods=["POST"])
+def profile_page():
+    if currentUser.id is None:
+        return redirect(url_for("login.login_page"))
     
+    username = Connector.getUserById(currentUser.id)[1]
+    other = Connector.getUserByName(request.form["other"])
+
+    if other is None:
+        message = "User does not exist."
+        users = Connector.getUsers()
+        channels = Connector.getYourChannels(currentUser.id)
+        return render_template("ServerCheck.html", username=username, users=users, channels=channels, message=message)
+    else:
+        othername = other[1]
+        pronouns = other[5]
+        desc = other[6]
+        return render_template("Profile.html", username=username, othername=othername, pronouns=pronouns, desc=desc)
+    
+@profile_bp.route("/dm", methods=["POST"])
+def dm():
+    if currentUser.id is None:
+        return redirect(url_for("login.login_page"))
+    
+    user = Connector.getUserById(currentUser.id)
+    username = user[1]
+    other = Connector.getUserByName(request.form["other"])
+
+    if other is None:
+        message = "User does not exist."
+        users = Connector.getUsers()
+        channels = Connector.getYourChannels(currentUser.id)
+        return render_template("ServerCheck.html", username=username, users=users, channels=channels, message=message)
+    elif user[0] == other[0]:
+        message = "You cannot direct message yourself."
+        othername = other[1]
+        pronouns = other[5]
+        desc = other[6]
+        return render_template("ProfileDMError.html", username=username, othername=othername, pronouns=pronouns, desc=desc, message=message)
+    elif not (Connector.getDM(user[0], other[0]) or Connector.getDM(other[0], user[0])):
+        tempName = str(datetime.now())
+        Connector.createChannel(tempName, 1)
+        channelId = Connector.getChannelByName(tempName)[0]
+        Connector.renameChannel(channelId, "Direct Message")
+        Connector.addUserToChannel(user[0], channelId)
+        Connector.addUserToChannel(other[0], channelId)
+        Connector.createDM(user[0], other[0], channelId)
+
+    channelId = Connector.getDM(user[0], other[0])[0] if Connector.getDM(user[0], other[0]) is not None else Connector.getDM(other[0], user[0])[0]
+    return loadChannel(username, "Direct Message", channelId)
+
 
 
 #---Channel page---
@@ -328,13 +387,7 @@ def channel_page():
     if channelInfo is None:
         return redirect(url_for("server.server_page"))
     else:
-        chats = []
-        messageData = Connector.getMessagesByChannel(channelInfo[0])
-        for m in messageData:
-            chats.append([m[0], str(m[1]) + " (" + str(m[2]) + "): " + str(m[3])])
-        admins = Connector.getAdminsOfChannel(channelInfo[0])
-        users = Connector.getNonAdminsOfChannel(channelInfo[0])
-        return render_template("Channel.html", username=username, channel=channel, admins=admins, users=users, chats=chats)
+        return loadChannel(username, channel, channelInfo[0])
 
 #Remove the given user from this channel, but only if you are an admin
 @channel_bp.route("/kick", methods=["POST"])
@@ -465,6 +518,15 @@ def delete_message():
             message = "Message deleted."
         
     return reloadChannel(username, channel, channelInfo[0], message)
+
+def loadChannel(username, channel, channelId):
+    chats = []
+    messageData = Connector.getMessagesByChannel(channelId)
+    for m in messageData:
+        chats.append([m[0], str(m[1]) + " (" + str(m[2]) + "): " + str(m[3])])
+    admins = Connector.getAdminsOfChannel(channelId)
+    users = Connector.getNonAdminsOfChannel(channelId)
+    return render_template("Channel.html", username=username, channel=channel, admins=admins, users=users, chats=chats)
     
 def reloadChannel(username, channel, channelId, message):
     chats = []
@@ -557,6 +619,7 @@ def delete_server():
 app.register_blueprint(admin_bp)
 app.register_blueprint(login_bp)
 app.register_blueprint(signup_bp)
+app.register_blueprint(edit_profile_bp)
 app.register_blueprint(server_bp)
 app.register_blueprint(channel_bp)
 app.register_blueprint(profile_bp)
