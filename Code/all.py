@@ -339,7 +339,7 @@ def profile_page():
         desc = other[6]
         return render_template("Profile.html", username=username, othername=othername, pronouns=pronouns, desc=desc)
     
-@profile_bp.route("/dm", methods=["POST"])
+@channel_bp.route("/dm", methods=["POST"])
 def dm():
     if currentUser.id is None:
         return redirect(url_for("login.login_page"))
@@ -368,7 +368,7 @@ def dm():
         Connector.addUserToChannel(other[0], channelId)
         Connector.createDM(user[0], other[0], channelId)
 
-    channelId = Connector.getDM(user[0], other[0])[0] if Connector.getDM(user[0], other[0]) is not None else Connector.getDM(other[0], user[0])[0]
+    channelId = Connector.getDM(user[0], other[0])[2] if Connector.getDM(user[0], other[0]) is not None else Connector.getDM(other[0], user[0])[2]
     return loadChannel(username, "Direct Message", channelId)
 
 
@@ -536,82 +536,6 @@ def reloadChannel(username, channel, channelId, message):
     admins = Connector.getAdminsOfChannel(channelId)
     users = Connector.getNonAdminsOfChannel(channelId)
     return render_template("ChannelCheck.html", username=username, channel=channel, admins=admins, users=users, chats=chats, message=message)
-        
-
-
-
-
-#TODO: These functions will either be deprecated or incorporated into the channel page for more convenient access:
-
-# Routes and functionalities for admin module
-@admin_bp.route("/admin")
-def admin_page():
-    return render_template("Admin.html")
-
-@admin_bp.route("/mute", methods=["POST"])
-def mute_user():
-    print("Mute user function executed.")
-    return "User muted successfully."
-
-@admin_bp.route("/unmute", methods=["POST"])
-def unmute_user():
-    print("Unmute user function executed.")
-    return "User unmuted successfully."
-
-#@admin_bp.route("/kick", methods=["POST"])
-#def kick_user():
-#    print("Kick user function executed.")
-#    return "User kicked successfully."
-
-@admin_bp.route("/ban", methods=["POST"])
-def ban_user():
-    print("Ban user function executed.")
-    return "User banned successfully."
-
-@admin_bp.route("/unban", methods=["POST"])
-def unban_user():
-    print("Unban user function executed.")
-    return "User unbanned successfully."
-
-@admin_bp.route("/edit_roles", methods=["POST"])
-def edit_user_roles():
-    print("Edit user roles function executed.")
-    return "User roles edited successfully."
-
-@admin_bp.route("/process_user_admin", methods=["POST"])
-def process_user_admin():
-    username = request.form.get("username")
-    if not username:
-        return "Please provide a username."
-    else:
-        print("Received username:", username)
-        return "Received username: " + username
-
-def invoke_pageAdmin():
-    with current_app.test_request_context():
-        response = current_app.test_client().get("/admin")
-        return response
-
-@server_bp.route("/CreateServer", methods=["POST"])
-def create_server():
-    serverName = request.form.get("ServerName")
-    if not serverName:
-        print("Please name the server.")
-        return "Please name the server."
-    else:
-        print("Created Server: ", serverName)
-        return "Created Server: " + serverName
-
-@server_bp.route("/DeleteServer", methods=["POST"])
-def delete_server():
-    serverName = request.form.get("ServerName")
-    if not serverName:
-        print("Please name the target server.")
-        return "Please name the target server."
-    else:
-        print("Deleted Server: ", serverName)
-        return "Deleted Server: " + serverName
-    
 
 
 
