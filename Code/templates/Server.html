@@ -29,7 +29,7 @@
 <h1>Channels:</h1>
 {% if channels|length > 0 %}
     {% for channel in channels %}
-        <form method="POST">
+        <form method="POST" style="display:block;">
             <h2>{{channel}}</h2>
             <input type="hidden" id="channel" name="channel" value="{{channel}}">
             <button id="enterChannel" formaction="/channel">Enter Channel</button>

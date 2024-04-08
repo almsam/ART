@@ -8,16 +8,27 @@
 {% block header %}
 <h1>{{channel}}</h1>
 <h3>Logged in as: {{username}}</h3>
+<form action="/server">
+  <button id="goBack">Go Back to the Server Page</button>
+</form>
+<h1></h1>
 {% endblock %}
 
 {% block body %}
 <div id="chat-container">
-  <div id="messages"></div>
+  {% if chats|length > 0 %}
+    {% for chat in chats %}
+      <div>
+        <button id="deleteMessage">Delete</button>
+        <p style="display:inline-block;">{{chat}}</p>
+      </div>
+    {% endfor %}
+  {% endif %}
 </div>
-<input type="text" id="message-box" placeholder="Type your message..." />
-<button id="send-button">Send</button>
-<form action="/server">
-  <button id="goBack">Go Back to the Server Page</button>
+<form action="/post_message" method="POST">
+  <input type="hidden" id="channel" name="channel" value="{{channel}}">
+  <input type="text" id="message-box" name="message-box" placeholder="Type your message..." required />
+  <button id="send-button">Send</button>
 </form>
 
 {% block check %}{% endblock %}
@@ -26,7 +37,7 @@
 {% if admins|length > 0 %}
     {% for admin in admins %}
       <form method="POST">
-        <p>{{admin}}</p>
+        <p style="display:inline-block;">{{admin}}</p>
         <input type="hidden" id="channel" name="channel" value="{{channel}}">
         <input type="hidden" id="user" name="user" value="{{admin}}">
         <button id="kick" formaction="/kick">Kick User</button>
@@ -37,8 +48,8 @@
 <h2>General Users:</h2>
 {% if users|length > 0 %}
     {% for user in users %}
-        <p>{{user}}</p>
         <form method="POST">
+          <p style="display:inline-block;">{{user}}</p>
           <input type="hidden" id="channel" name="channel" value="{{channel}}">
           <input type="hidden" id="user" name="user" value="{{user}}">
           <button id="kick" formaction="/kick">Kick User</button>
@@ -48,7 +59,7 @@
 {% endif %}
 
 <script>
-  function sendMessage() {
+  /*function sendMessage() {
     var messageInput = document.getElementById("message-box");
     var message = messageInput.value.trim();
     if (message !== "") {
@@ -72,7 +83,7 @@
       if (event.keyCode === 13) {
         sendMessage();
       }
-    });
+    });*/
 </script>
 </body>
 {% endblock %}

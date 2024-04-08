@@ -10,6 +10,7 @@ from flask import (
 from databaseHandler import databaseHandler
 from validation import parameterValidator
 from loggedInUser import loggedInUser
+from datetime import datetime
 
 Connector = databaseHandler()
 Validator = parameterValidator()
@@ -317,7 +318,7 @@ def leave_channel():
 
 #Channel page with messages and list of members grouped by admin and non-admin
 @channel_bp.route("/channel", methods=["POST"])
-def index_page():
+def channel_page():
     if currentUser.id is None:
         return redirect(url_for("login.login_page"))
     else:
@@ -327,9 +328,13 @@ def index_page():
         if channelInfo is None:
             return redirect(url_for("server.server_page"))
         else:
+            chats = []
+            messageData = Connector.getMessagesByChannel(channelInfo[0])
+            for m in messageData:
+                chats.append(str(m[0]) + " (" + str(m[1]) + "): " + str(m[2]))
             admins = Connector.getAdminsOfChannel(channelInfo[0])
             users = Connector.getNonAdminsOfChannel(channelInfo[0])
-            return render_template("Channel.html", username=username, channel=channel, admins=admins, users=users)
+            return render_template("Channel.html", username=username, channel=channel, admins=admins, users=users, chats=chats)
 
 #Remove the given user from this channel, but only if you are an admin
 @channel_bp.route("/kick", methods=["POST"])
@@ -358,9 +363,13 @@ def kick():
                 Connector.removeAdmin(userInfo[0], channelInfo[0])
                 message = "User " + userToKick + " kicked successfully."
         
+        chats = []
+        messageData = Connector.getMessagesByChannel(channelInfo[0])
+        for m in messageData:
+            chats.append(str(m[0]) + " (" + str(m[1]) + "): " + str(m[2]))
         admins = Connector.getAdminsOfChannel(channelInfo[0])
         users = Connector.getNonAdminsOfChannel(channelInfo[0])
-        return render_template("ChannelCheck.html", username=username, channel=channel, admins=admins, users=users, message=message)
+        return render_template("ChannelCheck.html", username=username, channel=channel, admins=admins, users=users, chats=chats, message=message)
 
 #Unset the given user as an admin, but only if you are an admin and are not unsetting yourself when you are the only admin
 @channel_bp.route("/remove_admin", methods=["POST"])
@@ -388,9 +397,13 @@ def remove_admin():
                 Connector.removeAdmin(userInfo[0], channelInfo[0])
                 message = "User " + userToUnset + " has been unset as an admin."
         
+        chats = []
+        messageData = Connector.getMessagesByChannel(channelInfo[0])
+        for m in messageData:
+            chats.append(str(m[0]) + " (" + str(m[1]) + "): " + str(m[2]))
         admins = Connector.getAdminsOfChannel(channelInfo[0])
         users = Connector.getNonAdminsOfChannel(channelInfo[0])
-        return render_template("ChannelCheck.html", username=username, channel=channel, admins=admins, users=users, message=message)
+        return render_template("ChannelCheck.html", username=username, channel=channel, admins=admins, users=users, chats=chats, message=message)
 
 #Set the given user as an admin, but only if you are an admin
 @channel_bp.route("/add_admin", methods=["POST"])
@@ -416,9 +429,41 @@ def add_admin():
                 Connector.addAdmin(userInfo[0], channelInfo[0])
                 message = "User " + userToSet + " has been set as an admin."
         
+        chats = []
+        messageData = Connector.getMessagesByChannel(channelInfo[0])
+        for m in messageData:
+            chats.append(str(m[0]) + " (" + str(m[1]) + "): " + str(m[2]))
         admins = Connector.getAdminsOfChannel(channelInfo[0])
         users = Connector.getNonAdminsOfChannel(channelInfo[0])
-        return render_template("ChannelCheck.html", username=username, channel=channel, admins=admins, users=users, message=message)
+        return render_template("ChannelCheck.html", username=username, channel=channel, admins=admins, users=users, chats=chats, message=message)
+    
+@channel_bp.route("/post_message", methods=["POST"])
+def post_message():
+    if currentUser.id is None:
+        return redirect(url_for("login.login_page"))
+    else:
+        username = Connector.getUserById(currentUser.id)[1]
+        channel = request.form["channel"]
+        chat = request.form["message-box"]
+        channelInfo = Connector.getChannelByName(channel)
+        if channelInfo is None:
+            return redirect(url_for("server.server_page"))
+        elif chat is None:
+            message = "Message failed."
+        else:
+            timestamp = Validator.convertDatetime(str(datetime.now()))
+            Connector.postMessage(currentUser.id, timestamp, channelInfo[0], chat)
+            message = ""
+            
+        chats = []
+        messageData = Connector.getMessagesByChannel(channelInfo[0])
+        for m in messageData:
+            chats.append(str(m[0]) + " (" + str(m[1]) + "): " + str(m[2]))
+        admins = Connector.getAdminsOfChannel(channelInfo[0])
+        users = Connector.getNonAdminsOfChannel(channelInfo[0])
+        return render_template("ChannelCheck.html", username=username, channel=channel, admins=admins, users=users, chats=chats, message=message)
+        
+
 
 
 

@@ -70,13 +70,15 @@ primary key (userId,channelId)
 );
 
 create table Message (
+messageId int AUTO_INCREMENT,
 userId int,
 messageTime DateTime,
 channelId int,
+messageContent nvarchar(500),
 -- serverId int,
 foreign key (userId) references User(id),
 foreign key (channelId) references Channel(id),
 -- foreign key (serverId) references Servers(id),
 -- primary key (messageTime,channelId,serverId)
-primary key (messageTime,channelId)
+primary key (messageId)
 );
