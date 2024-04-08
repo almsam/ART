@@ -420,13 +420,34 @@ class databaseHandler:
                 return validation
         return False
     
+    #Returns the information of a message matching the given message id
+    def getMessageById(self, messageId: int):
+        messageInfo = None
+        if (self.Validator.validateInt(messageId)):
+            try:
+                ARTdb = self.openDatabaseConnection()
+                cursor = ARTdb.cursor()
+                query = "SELECT * FROM Message WHERE messageId = %s"
+                cursor.execute(query, (messageId,))
+
+                for message in cursor:
+                    messageInfo = message
+
+                cursor.close()
+            except mysql.connector.Error as err:
+                print(err)
+            finally:
+                ARTdb.close()
+        return messageInfo
+    
+    #Return all messages with their ids, user ids, timestamps, and content in the current channel
     def getMessagesByChannel(self, channelId: int):
         messageData = []
         if (self.Validator.validateInt(channelId)):
             try:
                 ARTdb = self.openDatabaseConnection()
                 cursor = ARTdb.cursor()
-                query = "SELECT User.username, Message.messageTime, Message.messageContent FROM User JOIN Message ON User.id = Message.userId WHERE channelId = %s ORDER BY Message.messageId DESC"
+                query = "SELECT Message.messageId, User.username, Message.messageTime, Message.messageContent FROM User JOIN Message ON User.id = Message.userId WHERE channelId = %s"
                 cursor.execute(query, (channelId,))
 
                 for m in cursor:
@@ -439,6 +460,7 @@ class databaseHandler:
                 ARTdb.close()
         return messageData
     
+    #Record the given message and its user id and timestamp as posted in the channel
     def postMessage(self, userId: int, messageTime: str, channelId: int, messageContent: str):
         if (self.Validator.validateInt(userId) and self.Validator.auxValidateString(messageTime) and self.Validator.validateInt(channelId) and self.Validator.auxValidateString(messageContent)):
             try:
@@ -446,6 +468,26 @@ class databaseHandler:
                 cursor = ARTdb.cursor()
                 query = "INSERT INTO Message (userId, messageTime, channelId, messageContent) VALUES (%s, %s, %s, %s)"
                 cursor.execute(query, (userId, messageTime, channelId, messageContent))
+                ARTdb.commit()
+
+                cursor.close()
+                validation = True
+            except mysql.connector.Error as err:
+                print(err)
+                validation = False
+            finally:
+                ARTdb.close()
+                return validation
+        return False
+    
+    #Delete the message with the given id
+    def deleteMessage(self, messageId: int):
+        if (self.Validator.validateInt(messageId)):
+            try:
+                ARTdb = self.openDatabaseConnection()
+                cursor = ARTdb.cursor()
+                query = "DELETE FROM Message WHERE messageId = %s"
+                cursor.execute(query, (messageId,))
                 ARTdb.commit()
 
                 cursor.close()

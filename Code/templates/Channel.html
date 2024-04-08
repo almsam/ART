@@ -17,10 +17,14 @@
 {% block body %}
 <div id="chat-container">
   {% if chats|length > 0 %}
-    {% for chat in chats %}
+    {% for messageId, chat in chats %}
       <div>
-        <button id="deleteMessage">Delete</button>
-        <p style="display:inline-block;">{{chat}}</p>
+        <form action="/delete_message" method="POST">
+          <input type="hidden" id="messageId" name="messageId" value="{{messageId}}">
+          <input type="hidden" id="channel" name="channel" value="{{channel}}">
+          <button id="deleteMessage">Delete</button>
+          <p style="display:inline-block;">{{chat}}</p>
+        </form>
       </div>
     {% endfor %}
   {% endif %}
@@ -57,33 +61,5 @@
         </form>
     {% endfor %}
 {% endif %}
-
-<script>
-  /*function sendMessage() {
-    var messageInput = document.getElementById("message-box");
-    var message = messageInput.value.trim();
-    if (message !== "") {
-      var messagesContainer = document.getElementById("messages");
-      var messageElement = document.createElement("div");
-      messageElement.textContent = message;
-      messagesContainer.appendChild(messageElement);
-      messageInput.value = "";
-
-      messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }
-  }
-
-  document
-    .getElementById("send-button")
-    .addEventListener("click", sendMessage);
-
-  document
-    .getElementById("message-box")
-    .addEventListener("keypress", function (event) {
-      if (event.keyCode === 13) {
-        sendMessage();
-      }
-    });*/
-</script>
 </body>
 {% endblock %}

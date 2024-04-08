@@ -120,42 +120,42 @@ def signup():
 def profile_page():
     if currentUser.id is None:
         return redirect(url_for("login.login_page"))
-    else:
-        username = Connector.getUserById(currentUser.id)[1]
-        password = Connector.getUserById(currentUser.id)[2]
-        email = Connector.getUserById(currentUser.id)[3]
-        dob = Connector.getUserById(currentUser.id)[4]
-        pronouns = "" if Connector.getUserById(currentUser.id)[5] is None else Connector.getUserById(currentUser.id)[5]
-        desc = "" if Connector.getUserById(currentUser.id)[6] is None else Connector.getUserById(currentUser.id)[6]
-        return render_template("Profile.html", username=username, password=password, email=email, dob=dob, pronouns=pronouns, desc=desc)
+    
+    username = Connector.getUserById(currentUser.id)[1]
+    password = Connector.getUserById(currentUser.id)[2]
+    email = Connector.getUserById(currentUser.id)[3]
+    dob = Connector.getUserById(currentUser.id)[4]
+    pronouns = "" if Connector.getUserById(currentUser.id)[5] is None else Connector.getUserById(currentUser.id)[5]
+    desc = "" if Connector.getUserById(currentUser.id)[6] is None else Connector.getUserById(currentUser.id)[6]
+    return render_template("Profile.html", username=username, password=password, email=email, dob=dob, pronouns=pronouns, desc=desc)
 
 #Edit user with the given information, and reload page with a message saying whether or not edit was successful
 @profile_bp.route("/editprofile", methods=["POST"])
 def edit_profile():
     if currentUser.id is None:
         return redirect(url_for("login.login_page"))
-    else:
-        username = request.form["username"]
-        password = request.form["password"]
-        confirmPassword = request.form["confirmPassword"]
-        email = request.form["email"]
-        dob = request.form["dob"]
-        pronouns = request.form["pronouns"]
-        desc = request.form["desc"]
 
-        oldUsername = Connector.getUserById(currentUser.id)[1]
-        errors = profileErrors(username, oldUsername, password, confirmPassword, email, dob)
+    username = request.form["username"]
+    password = request.form["password"]
+    confirmPassword = request.form["confirmPassword"]
+    email = request.form["email"]
+    dob = request.form["dob"]
+    pronouns = request.form["pronouns"]
+    desc = request.form["desc"]
 
-        if not errors:
-            Connector.editUser(currentUser.id, username, password, email, dob, pronouns, desc)
+    oldUsername = Connector.getUserById(currentUser.id)[1]
+    errors = profileErrors(username, oldUsername, password, confirmPassword, email, dob)
 
-            username = Connector.getUserById(currentUser.id)[1]
-            password = Connector.getUserById(currentUser.id)[2]
-            email = Connector.getUserById(currentUser.id)[3]
-            dob = Connector.getUserById(currentUser.id)[4]
-            pronouns = "" if Connector.getUserById(currentUser.id)[5] is None else Connector.getUserById(currentUser.id)[5]
-            desc = "" if Connector.getUserById(currentUser.id)[6] is None else Connector.getUserById(currentUser.id)[6]
-        return render_template("ProfileCheck.html", username=username, password=password, email=email, dob=dob, pronouns=pronouns, desc=desc, errors=errors)
+    if not errors:
+        Connector.editUser(currentUser.id, username, password, email, dob, pronouns, desc)
+
+        username = Connector.getUserById(currentUser.id)[1]
+        password = Connector.getUserById(currentUser.id)[2]
+        email = Connector.getUserById(currentUser.id)[3]
+        dob = Connector.getUserById(currentUser.id)[4]
+        pronouns = "" if Connector.getUserById(currentUser.id)[5] is None else Connector.getUserById(currentUser.id)[5]
+        desc = "" if Connector.getUserById(currentUser.id)[6] is None else Connector.getUserById(currentUser.id)[6]
+    return render_template("ProfileCheck.html", username=username, password=password, email=email, dob=dob, pronouns=pronouns, desc=desc, errors=errors)
 
 #Helper method to record registration/profile editing errors
 def profileErrors(username, oldUsername, password, confirmPassword, email, dob):
@@ -188,129 +188,129 @@ def profileErrors(username, oldUsername, password, confirmPassword, email, dob):
 def server_page():
     if currentUser.id is None:
         return redirect(url_for("login.login_page"))
-    else:
-        username = Connector.getUserById(currentUser.id)[1]
-        users = Connector.getUsers()
-        channels = Connector.getYourChannels(currentUser.id)
-        return render_template("Server.html", username=username, users=users, channels=channels)
+
+    username = Connector.getUserById(currentUser.id)[1]
+    users = Connector.getUsers()
+    channels = Connector.getYourChannels(currentUser.id)
+    return render_template("Server.html", username=username, users=users, channels=channels)
 
 #Only show channels matching the search query
 @server_bp.route("/search_channel", methods=["POST"])
 def search_channel():
     if currentUser.id is None:
         return redirect(url_for("login.login_page"))
-    else:
-        username = Connector.getUserById(currentUser.id)[1]
-        users = Connector.getUsers()
-        channelName = request.form["channelName"]
-        channels = Connector.searchChannelsByName(currentUser.id, channelName)
-        message = "Returned channels matching search query: " + channelName + "."
-        return render_template("ServerCheck.html", username=username, users=users, channels=channels, message=message)
+
+    username = Connector.getUserById(currentUser.id)[1]
+    users = Connector.getUsers()
+    channelName = request.form["channelName"]
+    channels = Connector.searchChannelsByName(currentUser.id, channelName)
+    message = "Returned channels matching search query: " + channelName + "."
+    return render_template("ServerCheck.html", username=username, users=users, channels=channels, message=message)
 
 #Add a channel, set yourself as a member and admin, and update the channel list
 @server_bp.route("/create_channel", methods=["POST"])
 def create_channel():
     if currentUser.id is None:
         return redirect(url_for("login.login_page"))
+
+    username = Connector.getUserById(currentUser.id)[1]
+    users = Connector.getUsers()
+    channelName = request.form["channelName"]
+    channels = Connector.getAllChannels()
+
+    if channelName in channels:
+        message = "Channel " + channelName + " already exists."
     else:
-        username = Connector.getUserById(currentUser.id)[1]
-        users = Connector.getUsers()
-        channelName = request.form["channelName"]
-        channels = Connector.getAllChannels()
+        Connector.createChannel(channelName)
+        channelId = Connector.getChannelByName(channelName)[0]
+        Connector.addUserToChannel(currentUser.id, channelId)
+        Connector.addAdmin(currentUser.id, channelId)
+        message = "Channel " + channelName + " successfully created. You are now the admin of this channel."
 
-        if channelName in channels:
-            message = "Channel " + channelName + " already exists."
-        else:
-            Connector.createChannel(channelName)
-            channelId = Connector.getChannelByName(channelName)[0]
-            Connector.addUserToChannel(currentUser.id, channelId)
-            Connector.addAdmin(currentUser.id, channelId)
-            message = "Channel " + channelName + " successfully created. You are now the admin of this channel."
-
-        channels = Connector.getYourChannels(currentUser.id)
-        return render_template("ServerCheck.html", username=username, users=users, channels=channels, message=message)
+    channels = Connector.getYourChannels(currentUser.id)
+    return render_template("ServerCheck.html", username=username, users=users, channels=channels, message=message)
 
 #Delete a channel, remove yourself as a member and admin, and update the channel list
 @server_bp.route("/delete_channel", methods=["POST"])
 def delete_channel():
     if currentUser.id is None:
         return redirect(url_for("login.login_page"))
-    else:
-        username = Connector.getUserById(currentUser.id)[1]
-        users = Connector.getUsers()
-        channelName = request.form["channelName"]
-        channels = Connector.getAllChannels()
-        channelInfo = Connector.getChannelByName(channelName)
-        
-        if channelInfo is None:
-            message = "Channel " + channelName + " does not exist."
-        else:
-            adminStatus = Connector.getAdminById(currentUser.id, channelInfo[0])
-            if adminStatus is None:
-                message = "Cannot delete " + channelName + " as you are not an admin of this channel."
-            else:
-                Connector.removeUserFromChannel(currentUser.id, channelInfo[0])
-                Connector.removeAdmin(currentUser.id, channelInfo[0])
-                Connector.deleteChannel(channelName)
-                message = "Channel " + channelName + " successfully deleted."
 
-        channels = Connector.getYourChannels(currentUser.id)
-        return render_template("ServerCheck.html", username=username, users=users, channels=channels, message=message)
+    username = Connector.getUserById(currentUser.id)[1]
+    users = Connector.getUsers()
+    channelName = request.form["channelName"]
+    channels = Connector.getAllChannels()
+    channelInfo = Connector.getChannelByName(channelName)
+    
+    if channelInfo is None:
+        message = "Channel " + channelName + " does not exist."
+    else:
+        adminStatus = Connector.getAdminById(currentUser.id, channelInfo[0])
+        if adminStatus is None:
+            message = "Cannot delete " + channelName + " as you are not an admin of this channel."
+        else:
+            Connector.removeUserFromChannel(currentUser.id, channelInfo[0])
+            Connector.removeAdmin(currentUser.id, channelInfo[0])
+            Connector.deleteChannel(channelName)
+            message = "Channel " + channelName + " successfully deleted."
+
+    channels = Connector.getYourChannels(currentUser.id)
+    return render_template("ServerCheck.html", username=username, users=users, channels=channels, message=message)
 
 #Add the given user to the given channel, which will appear in their channel list
 @server_bp.route("/add_user", methods=["POST"])
 def add_user():
     if currentUser.id is None:
         return redirect(url_for("login.login_page"))
-    else:
-        username = Connector.getUserById(currentUser.id)[1]
-        users = Connector.getUsers()
-        userToAdd = request.form["userToAdd"]
-        userInfo = Connector.getUserByName(userToAdd)
-        channelName = request.form["channel"]
-        channelInfo = Connector.getChannelByName(channelName)
-        channels = Connector.getAllChannels()
 
-        if channelInfo is None:
-            message = "Channel " + channelName + " does not exist."
-        elif userInfo is None:
-            message = "User " + userToAdd + " does not exist."
+    username = Connector.getUserById(currentUser.id)[1]
+    users = Connector.getUsers()
+    userToAdd = request.form["userToAdd"]
+    userInfo = Connector.getUserByName(userToAdd)
+    channelName = request.form["channel"]
+    channelInfo = Connector.getChannelByName(channelName)
+    channels = Connector.getAllChannels()
+
+    if channelInfo is None:
+        message = "Channel " + channelName + " does not exist."
+    elif userInfo is None:
+        message = "User " + userToAdd + " does not exist."
+    else:
+        currentMember = Connector.getChannelMember(userInfo[0], channelInfo[0])
+        if currentMember is not None:
+            message = "User " + userToAdd + " is already a member of this channel."
         else:
-            currentMember = Connector.getChannelMember(userInfo[0], channelInfo[0])
-            if currentMember is not None:
-                message = "User " + userToAdd + " is already a member of this channel."
-            else:
-                Connector.addUserToChannel(userInfo[0], channelInfo[0])
-                message = "User " + userToAdd + " successfully added to channel " + channelName + "."
-        
-        channels = Connector.getYourChannels(currentUser.id)
-        return render_template("ServerCheck.html", username=username, users=users, channels=channels, message=message)
+            Connector.addUserToChannel(userInfo[0], channelInfo[0])
+            message = "User " + userToAdd + " successfully added to channel " + channelName + "."
+    
+    channels = Connector.getYourChannels(currentUser.id)
+    return render_template("ServerCheck.html", username=username, users=users, channels=channels, message=message)
 
 #Remove yourself from a channel and update the channel list
 @server_bp.route("/leave_channel", methods=["POST"])
 def leave_channel():
     if currentUser.id is None:
         return redirect(url_for("login.login_page"))
-    else:
-        username = Connector.getUserById(currentUser.id)[1]
-        users = Connector.getUsers()
-        channelName = request.form["channel"]
-        channelInfo = Connector.getChannelByName(channelName)
 
-        if channelInfo is None:
-            message = "Channel " + channelName + " does not exist."
+    username = Connector.getUserById(currentUser.id)[1]
+    users = Connector.getUsers()
+    channelName = request.form["channel"]
+    channelInfo = Connector.getChannelByName(channelName)
+
+    if channelInfo is None:
+        message = "Channel " + channelName + " does not exist."
+    else:
+        admins = Connector.getAdminsOfChannel(channelInfo[0])
+        print(admins)
+        if len(admins) == 1 and username in admins:
+            message = "Cannot leave this channel as you are the only admin of this channel."
         else:
-            admins = Connector.getAdminsOfChannel(channelInfo[0])
-            print(admins)
-            if len(admins) == 1 and username in admins:
-                message = "Cannot leave this channel as you are the only admin of this channel."
-            else:
-                Connector.removeUserFromChannel(currentUser.id, channelInfo[0])
-                Connector.removeAdmin(currentUser.id, channelInfo[0])
-                message = "You have left the channel " + channelName + ". To rejoin, you must be added back in by a member of that channel."
-        
-        channels = Connector.getYourChannels(currentUser.id)
-        return render_template("ServerCheck.html", username=username, users=users, channels=channels, message=message)
+            Connector.removeUserFromChannel(currentUser.id, channelInfo[0])
+            Connector.removeAdmin(currentUser.id, channelInfo[0])
+            message = "You have left the channel " + channelName + ". To rejoin, you must be added back in by a member of that channel."
+    
+    channels = Connector.getYourChannels(currentUser.id)
+    return render_template("ServerCheck.html", username=username, users=users, channels=channels, message=message)
     
 
 
@@ -321,147 +321,159 @@ def leave_channel():
 def channel_page():
     if currentUser.id is None:
         return redirect(url_for("login.login_page"))
+
+    username = Connector.getUserById(currentUser.id)[1]
+    channel = request.form["channel"]
+    channelInfo = Connector.getChannelByName(channel)
+    if channelInfo is None:
+        return redirect(url_for("server.server_page"))
     else:
-        username = Connector.getUserById(currentUser.id)[1]
-        channel = request.form["channel"]
-        channelInfo = Connector.getChannelByName(channel)
-        if channelInfo is None:
-            return redirect(url_for("server.server_page"))
-        else:
-            chats = []
-            messageData = Connector.getMessagesByChannel(channelInfo[0])
-            for m in messageData:
-                chats.append(str(m[0]) + " (" + str(m[1]) + "): " + str(m[2]))
-            admins = Connector.getAdminsOfChannel(channelInfo[0])
-            users = Connector.getNonAdminsOfChannel(channelInfo[0])
-            return render_template("Channel.html", username=username, channel=channel, admins=admins, users=users, chats=chats)
+        chats = []
+        messageData = Connector.getMessagesByChannel(channelInfo[0])
+        for m in messageData:
+            chats.append([m[0], str(m[1]) + " (" + str(m[2]) + "): " + str(m[3])])
+        admins = Connector.getAdminsOfChannel(channelInfo[0])
+        users = Connector.getNonAdminsOfChannel(channelInfo[0])
+        return render_template("Channel.html", username=username, channel=channel, admins=admins, users=users, chats=chats)
 
 #Remove the given user from this channel, but only if you are an admin
 @channel_bp.route("/kick", methods=["POST"])
 def kick():
     if currentUser.id is None:
         return redirect(url_for("login.login_page"))
-    else:
-        username = Connector.getUserById(currentUser.id)[1]
-        channel = request.form["channel"]
-        channelInfo = Connector.getChannelByName(channel)
-        userToKick = request.form["user"]
-        userInfo = Connector.getUserByName(userToKick)
 
-        if channelInfo is None:
-            return redirect(url_for("server.server_page"))
-        elif userInfo is None:
-            message = "User " + userToKick + " does not exist in this channel."
-        elif userInfo[0] == currentUser.id:
-            message = "Cannot kick yourself. To leave this channel, please do so from the Server page." #TODO: Add method to leave a channel
+    username = Connector.getUserById(currentUser.id)[1]
+    channel = request.form["channel"]
+    channelInfo = Connector.getChannelByName(channel)
+    userToKick = request.form["user"]
+    userInfo = Connector.getUserByName(userToKick)
+
+    if channelInfo is None:
+        return redirect(url_for("server.server_page"))
+    elif userInfo is None:
+        message = "User " + userToKick + " does not exist in this channel."
+    elif userInfo[0] == currentUser.id:
+        message = "Cannot kick yourself. To leave this channel, please do so from the Server page." #TODO: Add method to leave a channel
+    else:
+        adminStatus = Connector.getAdminById(currentUser.id, channelInfo[0])
+        if adminStatus is None:
+            message = "Cannot kick this user as you are not an admin of this channel."
         else:
-            adminStatus = Connector.getAdminById(currentUser.id, channelInfo[0])
-            if adminStatus is None:
-                message = "Cannot kick this user as you are not an admin of this channel."
-            else:
-                Connector.removeUserFromChannel(userInfo[0], channelInfo[0])
-                Connector.removeAdmin(userInfo[0], channelInfo[0])
-                message = "User " + userToKick + " kicked successfully."
-        
-        chats = []
-        messageData = Connector.getMessagesByChannel(channelInfo[0])
-        for m in messageData:
-            chats.append(str(m[0]) + " (" + str(m[1]) + "): " + str(m[2]))
-        admins = Connector.getAdminsOfChannel(channelInfo[0])
-        users = Connector.getNonAdminsOfChannel(channelInfo[0])
-        return render_template("ChannelCheck.html", username=username, channel=channel, admins=admins, users=users, chats=chats, message=message)
+            Connector.removeUserFromChannel(userInfo[0], channelInfo[0])
+            Connector.removeAdmin(userInfo[0], channelInfo[0])
+            message = "User " + userToKick + " kicked successfully."
+    
+    return reloadChannel(username, channel, channelInfo[0], message)
 
 #Unset the given user as an admin, but only if you are an admin and are not unsetting yourself when you are the only admin
 @channel_bp.route("/remove_admin", methods=["POST"])
 def remove_admin():
     if currentUser.id is None:
         return redirect(url_for("login.login_page"))
-    else:
-        username = Connector.getUserById(currentUser.id)[1]
-        channel = request.form["channel"]
-        channelInfo = Connector.getChannelByName(channel)
-        userToUnset = request.form["user"]
-        userInfo = Connector.getUserByName(userToUnset)
 
-        if channelInfo is None:
-            return redirect(url_for("server.server_page"))
-        elif userInfo is None:
-            message = "User " + userToUnset + " does not exist in this channel."
+    username = Connector.getUserById(currentUser.id)[1]
+    channel = request.form["channel"]
+    channelInfo = Connector.getChannelByName(channel)
+    userToUnset = request.form["user"]
+    userInfo = Connector.getUserByName(userToUnset)
+
+    if channelInfo is None:
+        return redirect(url_for("server.server_page"))
+    elif userInfo is None:
+        message = "User " + userToUnset + " does not exist in this channel."
+    else:
+        adminStatus = Connector.getAdminById(currentUser.id, channelInfo[0])
+        if adminStatus is None:
+            message = "Cannot unset this user as admin as you are not an admin of this channel."
+        elif len(Connector.getAdminsOfChannel(channelInfo[0])) == 1:
+            message = "Cannot unset yourself as admin as you are the only admin of this channel."
         else:
-            adminStatus = Connector.getAdminById(currentUser.id, channelInfo[0])
-            if adminStatus is None:
-                message = "Cannot unset this user as admin as you are not an admin of this channel."
-            elif len(Connector.getAdminsOfChannel(channelInfo[0])) == 1:
-                message = "Cannot unset yourself as admin as you are the only admin of this channel."
-            else:
-                Connector.removeAdmin(userInfo[0], channelInfo[0])
-                message = "User " + userToUnset + " has been unset as an admin."
-        
-        chats = []
-        messageData = Connector.getMessagesByChannel(channelInfo[0])
-        for m in messageData:
-            chats.append(str(m[0]) + " (" + str(m[1]) + "): " + str(m[2]))
-        admins = Connector.getAdminsOfChannel(channelInfo[0])
-        users = Connector.getNonAdminsOfChannel(channelInfo[0])
-        return render_template("ChannelCheck.html", username=username, channel=channel, admins=admins, users=users, chats=chats, message=message)
+            Connector.removeAdmin(userInfo[0], channelInfo[0])
+            message = "User " + userToUnset + " has been unset as an admin."
+    
+    return reloadChannel(username, channel, channelInfo[0], message)
 
 #Set the given user as an admin, but only if you are an admin
 @channel_bp.route("/add_admin", methods=["POST"])
 def add_admin():
     if currentUser.id is None:
         return redirect(url_for("login.login_page"))
-    else:
-        username = Connector.getUserById(currentUser.id)[1]
-        channel = request.form["channel"]
-        channelInfo = Connector.getChannelByName(channel)
-        userToSet = request.form["user"]
-        userInfo = Connector.getUserByName(userToSet)
 
-        if channelInfo is None:
-            return redirect(url_for("server.server_page"))
-        elif userInfo is None:
-            message = "User " + userToSet + " does not exist in this channel."
+    username = Connector.getUserById(currentUser.id)[1]
+    channel = request.form["channel"]
+    channelInfo = Connector.getChannelByName(channel)
+    userToSet = request.form["user"]
+    userInfo = Connector.getUserByName(userToSet)
+
+    if channelInfo is None:
+        return redirect(url_for("server.server_page"))
+    elif userInfo is None:
+        message = "User " + userToSet + " does not exist in this channel."
+    else:
+        adminStatus = Connector.getAdminById(currentUser.id, channelInfo[0])
+        if adminStatus is None:
+            message = "Cannot set this user as admin as you are not an admin of this channel."
         else:
-            adminStatus = Connector.getAdminById(currentUser.id, channelInfo[0])
-            if adminStatus is None:
-                message = "Cannot set this user as admin as you are not an admin of this channel."
-            else:
-                Connector.addAdmin(userInfo[0], channelInfo[0])
-                message = "User " + userToSet + " has been set as an admin."
-        
-        chats = []
-        messageData = Connector.getMessagesByChannel(channelInfo[0])
-        for m in messageData:
-            chats.append(str(m[0]) + " (" + str(m[1]) + "): " + str(m[2]))
-        admins = Connector.getAdminsOfChannel(channelInfo[0])
-        users = Connector.getNonAdminsOfChannel(channelInfo[0])
-        return render_template("ChannelCheck.html", username=username, channel=channel, admins=admins, users=users, chats=chats, message=message)
+            Connector.addAdmin(userInfo[0], channelInfo[0])
+            message = "User " + userToSet + " has been set as an admin."
     
+    return reloadChannel(username, channel, channelInfo[0], message)
+
+#Post a message to the channel with your username and timestamp beside it
 @channel_bp.route("/post_message", methods=["POST"])
 def post_message():
     if currentUser.id is None:
         return redirect(url_for("login.login_page"))
+
+    username = Connector.getUserById(currentUser.id)[1]
+    channel = request.form["channel"]
+    chat = request.form["message-box"]
+    channelInfo = Connector.getChannelByName(channel)
+    if channelInfo is None:
+        return redirect(url_for("server.server_page"))
+    elif chat is None:
+        message = "Message failed."
     else:
-        username = Connector.getUserById(currentUser.id)[1]
-        channel = request.form["channel"]
-        chat = request.form["message-box"]
-        channelInfo = Connector.getChannelByName(channel)
-        if channelInfo is None:
-            return redirect(url_for("server.server_page"))
-        elif chat is None:
-            message = "Message failed."
+        timestamp = Validator.convertDatetime(str(datetime.now()))
+        Connector.postMessage(currentUser.id, timestamp, channelInfo[0], chat)
+        message = "Message posted."
+        
+    return reloadChannel(username, channel, channelInfo[0], message)
+    
+#Delete a message from a channel, but only if you wrote it or are an admin
+@channel_bp.route("/delete_message", methods=["POST"])
+def delete_message():
+    if currentUser.id is None:
+        return redirect(url_for("login.login_page"))
+
+    username = Connector.getUserById(currentUser.id)[1]
+    channel = request.form["channel"]
+    messageId = int(request.form["messageId"])
+    messageInfo = Connector.getMessageById(messageId)
+    print(messageInfo)
+    channelInfo = Connector.getChannelByName(channel)
+    if channelInfo is None:
+        return redirect(url_for("server.server_page"))
+    elif messageInfo is None:
+        message = "Message does not exist."
+    else:
+        adminStatus = Connector.getAdminById(currentUser.id, channelInfo[0])
+        if adminStatus is None and currentUser.id != messageInfo[1]:
+            message = "Cannot delete a message you did not post unless you are an admin."
         else:
-            timestamp = Validator.convertDatetime(str(datetime.now()))
-            Connector.postMessage(currentUser.id, timestamp, channelInfo[0], chat)
-            message = ""
-            
-        chats = []
-        messageData = Connector.getMessagesByChannel(channelInfo[0])
-        for m in messageData:
-            chats.append(str(m[0]) + " (" + str(m[1]) + "): " + str(m[2]))
-        admins = Connector.getAdminsOfChannel(channelInfo[0])
-        users = Connector.getNonAdminsOfChannel(channelInfo[0])
-        return render_template("ChannelCheck.html", username=username, channel=channel, admins=admins, users=users, chats=chats, message=message)
+            Connector.deleteMessage(messageId)
+            message = "Message deleted."
+        
+    return reloadChannel(username, channel, channelInfo[0], message)
+    
+def reloadChannel(username, channel, channelId, message):
+    chats = []
+    messageData = Connector.getMessagesByChannel(channelId)
+    for m in messageData:
+        chats.append([m[0], str(m[1]) + " (" + str(m[2]) + "): " + str(m[3])])
+    admins = Connector.getAdminsOfChannel(channelId)
+    users = Connector.getNonAdminsOfChannel(channelId)
+    return render_template("ChannelCheck.html", username=username, channel=channel, admins=admins, users=users, chats=chats, message=message)
         
 
 
