@@ -390,31 +390,31 @@ def channel_page():
         return loadChannel(username, channel, channelInfo[0])
 
 #Remove the given user from this channel, but only if you are an admin
-@channel_bp.route("/kick", methods=["POST"])
-def kick():
+@channel_bp.route("/ban", methods=["POST"])
+def ban():
     if currentUser.id is None:
         return redirect(url_for("login.login_page"))
 
     username = Connector.getUserById(currentUser.id)[1]
     channel = request.form["channel"]
     channelInfo = Connector.getChannelByName(channel)
-    userToKick = request.form["user"]
-    userInfo = Connector.getUserByName(userToKick)
+    userToBan = request.form["user"]
+    userInfo = Connector.getUserByName(userToBan)
 
     if channelInfo is None:
         return redirect(url_for("server.server_page"))
     elif userInfo is None:
-        message = "User " + userToKick + " does not exist in this channel."
+        message = "User " + userToBan + " does not exist in this channel."
     elif userInfo[0] == currentUser.id:
-        message = "Cannot kick yourself. To leave this channel, please do so from the Server page." #TODO: Add method to leave a channel
+        message = "Cannot ban yourself. To leave this channel, please do so from the Server page." #TODO: Add method to leave a channel
     else:
         adminStatus = Connector.getAdminById(currentUser.id, channelInfo[0])
         if adminStatus is None:
-            message = "Cannot kick this user as you are not an admin of this channel."
+            message = "Cannot ban this user as you are not an admin of this channel."
         else:
             Connector.removeUserFromChannel(userInfo[0], channelInfo[0])
             Connector.removeAdmin(userInfo[0], channelInfo[0])
-            message = "User " + userToKick + " kicked successfully."
+            message = "User " + userToBan + " banned successfully. To unban them, they must be added back to the channel."
     
     return reloadChannel(username, channel, channelInfo[0], message)
 
