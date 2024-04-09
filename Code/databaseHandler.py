@@ -200,15 +200,14 @@ class databaseHandler:
         return channel
     
     #Returns a list of the names of all channels that the current user is a member of matching the given search query in alphabetical order
-    #TODO: Figure out how to pass a parameter into the field for the LIKE operator
     def searchChannelsByName(self, id: int, name: str):
         channels = []
         if (self.Validator.auxValidateString(name) and self.Validator.validateInt(id)):
             try:
                 ARTdb = self.openDatabaseConnection()
                 cursor = ARTdb.cursor()
-                query = "SELECT Channel.name FROM Channel JOIN ChannelMember ON Channel.id = ChannelMember.channelId WHERE isDM = 0 AND ChannelMember.userId = %s AND Channel.name LIKE '%%s%' ORDER BY Channel.name"
-                cursor.execute(query, (id, name))
+                query = "SELECT Channel.name FROM Channel JOIN ChannelMember ON Channel.id = ChannelMember.channelId WHERE isDM = 0 AND ChannelMember.userId = %s AND Channel.name LIKE %s ORDER BY Channel.name"
+                cursor.execute(query, (id, "%" + name + "%"))
 
                 for channel in cursor:
                     channels.append(channel[0])
