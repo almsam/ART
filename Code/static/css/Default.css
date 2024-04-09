@@ -4,6 +4,7 @@ body{
 
 
 .container {
+    font-family: 'Times New Roman', Times, serif;
     display: flex;
     align-items: flex-start; 
     margin: 0;
