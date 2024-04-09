@@ -146,7 +146,7 @@ class databaseHandler:
         try:
             ARTdb = self.openDatabaseConnection()
             cursor = ARTdb.cursor()
-            query = "SELECT name FROM Channel"
+            query = "SELECT name FROM Channel WHERE isDM = 0"
             cursor.execute(query)
 
             for channel in cursor:
@@ -166,7 +166,7 @@ class databaseHandler:
             try:
                 ARTdb = self.openDatabaseConnection()
                 cursor = ARTdb.cursor()
-                query = "SELECT Channel.name FROM Channel JOIN ChannelMember ON Channel.id = ChannelMember.channelId WHERE ChannelMember.userId = %s ORDER BY Channel.name"
+                query = "SELECT Channel.name FROM Channel JOIN ChannelMember ON Channel.id = ChannelMember.channelId WHERE isDM = 0 AND ChannelMember.userId = %s ORDER BY Channel.name"
                 cursor.execute(query, (id,))
 
                 for channel in cursor:
@@ -182,7 +182,7 @@ class databaseHandler:
     #Returns the id and name of a channel matching the given name
     def getChannelByName(self, name: str):
         channel = None
-        if (self.Validator.validateNames(name) is None):
+        if (self.Validator.auxValidateString(name)):
             try:
                 ARTdb = self.openDatabaseConnection()
                 cursor = ARTdb.cursor()
@@ -200,15 +200,14 @@ class databaseHandler:
         return channel
     
     #Returns a list of the names of all channels that the current user is a member of matching the given search query in alphabetical order
-    #TODO: Figure out how to pass a parameter into the field for the LIKE operator
     def searchChannelsByName(self, id: int, name: str):
         channels = []
-        if (self.Validator.validateNames(name) is None and self.Validator.validateInt(id)):
+        if (self.Validator.auxValidateString(name) and self.Validator.validateInt(id)):
             try:
                 ARTdb = self.openDatabaseConnection()
                 cursor = ARTdb.cursor()
-                query = "SELECT Channel.name FROM Channel JOIN ChannelMember ON Channel.id = ChannelMember.channelId WHERE ChannelMember.userId = %s AND Channel.name LIKE '%%s%' ORDER BY Channel.name"
-                cursor.execute(query, (id, name))
+                query = "SELECT Channel.name FROM Channel JOIN ChannelMember ON Channel.id = ChannelMember.channelId WHERE isDM = 0 AND ChannelMember.userId = %s AND Channel.name LIKE %s ORDER BY Channel.name"
+                cursor.execute(query, (id, "%" + name + "%"))
 
                 for channel in cursor:
                     channels.append(channel[0])
@@ -221,13 +220,13 @@ class databaseHandler:
         return channels
     
     #Creates a new channel in the database
-    def createChannel(self, name: str):
-        if (self.Validator.validateNames(name) is None):
+    def createChannel(self, name: str, isDM: int):
+        if (self.Validator.auxValidateString(name) and self.Validator.validateInt(isDM)):
             try:
                 ARTdb = self.openDatabaseConnection()
                 cursor = ARTdb.cursor()
-                query = "INSERT INTO Channel (name) VALUES (%s)"
-                cursor.execute(query, (name,))
+                query = "INSERT INTO Channel (name, isDM) VALUES (%s, %s)"
+                cursor.execute(query, (name, isDM))
                 ARTdb.commit()
 
                 cursor.close()
@@ -242,12 +241,32 @@ class databaseHandler:
     
     #Deletes a channel from the database
     def deleteChannel(self, name: str):
-        if (self.Validator.validateNames(name) is None):
+        if (self.Validator.auxValidateString(name)):
             try:
                 ARTdb = self.openDatabaseConnection()
                 cursor = ARTdb.cursor()
                 query = "DELETE FROM Channel WHERE name = %s"
                 cursor.execute(query, (name,))
+                ARTdb.commit()
+
+                cursor.close()
+                validation = True
+            except mysql.connector.Error as err:
+                print(err)
+                validation = False
+            finally:
+                ARTdb.close()
+                return validation
+        return False
+    
+    #Renames a channel in the database
+    def renameChannel(self, id: int, name: str):
+        if (self.Validator.auxValidateString(name) and self.Validator.validateInt(id)):
+            try:
+                ARTdb = self.openDatabaseConnection()
+                cursor = ARTdb.cursor()
+                query = "UPDATE Channel SET name = %s WHERE id = %s"
+                cursor.execute(query, (name,id))
                 ARTdb.commit()
 
                 cursor.close()
@@ -408,6 +427,126 @@ class databaseHandler:
                 cursor = ARTdb.cursor()
                 query = "DELETE FROM Admins WHERE userId = %s AND channelId = %s"
                 cursor.execute(query, (userId, channelId))
+                ARTdb.commit()
+
+                cursor.close()
+                validation = True
+            except mysql.connector.Error as err:
+                print(err)
+                validation = False
+            finally:
+                ARTdb.close()
+                return validation
+        return False
+    
+    #Returns the information of a message matching the given message id
+    def getMessageById(self, messageId: int):
+        messageInfo = None
+        if (self.Validator.validateInt(messageId)):
+            try:
+                ARTdb = self.openDatabaseConnection()
+                cursor = ARTdb.cursor()
+                query = "SELECT * FROM Message WHERE messageId = %s"
+                cursor.execute(query, (messageId,))
+
+                for message in cursor:
+                    messageInfo = message
+
+                cursor.close()
+            except mysql.connector.Error as err:
+                print(err)
+            finally:
+                ARTdb.close()
+        return messageInfo
+    
+    #Return all messages with their ids, user ids, timestamps, and content in the current channel
+    def getMessagesByChannel(self, channelId: int):
+        messageData = []
+        if (self.Validator.validateInt(channelId)):
+            try:
+                ARTdb = self.openDatabaseConnection()
+                cursor = ARTdb.cursor()
+                query = "SELECT Message.messageId, User.username, Message.messageTime, Message.messageContent FROM User JOIN Message ON User.id = Message.userId WHERE channelId = %s"
+                cursor.execute(query, (channelId,))
+
+                for m in cursor:
+                    messageData.append(m)
+
+                cursor.close()
+            except mysql.connector.Error as err:
+                print(err)
+            finally:
+                ARTdb.close()
+        return messageData
+    
+    #Record the given message and its user id and timestamp as posted in the channel
+    def postMessage(self, userId: int, messageTime: str, channelId: int, messageContent: str):
+        if (self.Validator.validateInt(userId) and self.Validator.auxValidateString(messageTime) and self.Validator.validateInt(channelId) and self.Validator.auxValidateString(messageContent)):
+            try:
+                ARTdb = self.openDatabaseConnection()
+                cursor = ARTdb.cursor()
+                query = "INSERT INTO Message (userId, messageTime, channelId, messageContent) VALUES (%s, %s, %s, %s)"
+                cursor.execute(query, (userId, messageTime, channelId, messageContent))
+                ARTdb.commit()
+
+                cursor.close()
+                validation = True
+            except mysql.connector.Error as err:
+                print(err)
+                validation = False
+            finally:
+                ARTdb.close()
+                return validation
+        return False
+    
+    #Delete the message with the given id
+    def deleteMessage(self, messageId: int):
+        if (self.Validator.validateInt(messageId)):
+            try:
+                ARTdb = self.openDatabaseConnection()
+                cursor = ARTdb.cursor()
+                query = "DELETE FROM Message WHERE messageId = %s"
+                cursor.execute(query, (messageId,))
+                ARTdb.commit()
+
+                cursor.close()
+                validation = True
+            except mysql.connector.Error as err:
+                print(err)
+                validation = False
+            finally:
+                ARTdb.close()
+                return validation
+        return False
+    
+    #Returns the information of a direct messaging channel between the given user ids
+    def getDM(self, userId: int, otherId: int):
+        dmInfo = None
+        if (self.Validator.validateInt(userId) and self.Validator.validateInt(userId)):
+            try:
+                ARTdb = self.openDatabaseConnection()
+                cursor = ARTdb.cursor()
+                query = "SELECT * FROM DM WHERE userId = %s AND otherId = %s"
+                cursor.execute(query, (userId, otherId))
+
+                for dm in cursor:
+                    dmInfo = dm
+
+                cursor.close()
+            except mysql.connector.Error as err:
+                print(err)
+            finally:
+                ARTdb.close()
+        return dmInfo
+    
+    #Creates a direct messaging channel between the given user ids and channel id
+    def createDM(self, userId: int, otherId: int, channelId: int):
+        if (self.Validator.validateInt(userId) and self.Validator.validateInt(userId) and self.Validator.validateInt(channelId)):
+            try:
+                ARTdb = self.openDatabaseConnection()
+                cursor = ARTdb.cursor()
+                query = "INSERT INTO DM VALUES (%s, %s, %s)"
+                cursor.execute(query, (userId, otherId, channelId))
                 ARTdb.commit()
 
                 cursor.close()

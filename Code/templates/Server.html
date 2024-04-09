@@ -17,8 +17,8 @@
     <button id="CreateChannel" formaction="/create_channel">Create Channel</button>
     <button id="DeleteChannel" formaction="/delete_channel">Delete Channel</button>
 </form>
-<form action="/profile">
-    <button id="profile">Update Personal Info</button>
+<form action="/edit_profile">
+    <button id="editProfile">Update Personal Info</button>
 </form>
 <form action="/logout" method="POST">
     <button id="logout">Log Out</button>
@@ -29,7 +29,7 @@
 <h1>Channels:</h1>
 {% if channels|length > 0 %}
     {% for channel in channels %}
-        <form method="POST">
+        <form method="POST" style="display:block;">
             <h2>{{channel}}</h2>
             <input type="hidden" id="channel" name="channel" value="{{channel}}">
             <button id="enterChannel" formaction="/channel">Enter Channel</button>
@@ -40,13 +40,22 @@
             <input type="text" id="userToAdd" name="userToAdd" required>
             <button id="addUser" formaction="/add_user">Add User</button>
         </form>
+        <form method="POST">
+            <input type="hidden" id="channel" name="channel" value="{{channel}}">
+            <input type="text" id="newChannelName" name="newChannelName" required>
+            <button id="addUser" formaction="/rename_channel">Rename Channel</button>
+        </form>
     {% endfor %}
 {% endif %}
 
 <h1>Server Members:</h1>
 {% if users|length > 0 %}
     {% for user in users %}
-        <p>{{user}}</p>
+        <form action="/profile" style="display:inline-block;" method="POST">
+            <h3>{{user}}</h3>
+            <input type="hidden" id="other" name="other" value="{{user}}">
+            <button id="seeProfile">See Profile</button>
+        </form>
     {% endfor %}
 {% endif %}
 {% endblock %}

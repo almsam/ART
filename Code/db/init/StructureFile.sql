@@ -28,15 +28,26 @@ id int AUTO_INCREMENT,
 name varchar(64),
 -- Foreign key (serverId) references Servers(id),
 -- Primary key (id, serverId)
+isDM bit,
 Primary key (id)
 );
 
-create table Friends (
+-- create table Friends (
+-- userId int,
+-- friendId int,
+-- foreign key (userId) references User(id),
+-- foreign key (friendId) references User(id),
+-- primary key (userId,friendId)
+-- );
+
+create table DM (
 userId int,
-friendId int,
+otherId int,
+channelId int,
 foreign key (userId) references User(id),
-foreign key (friendId) references User(id),
-primary key (userId,friendId)
+foreign key (otherId) references User(id),
+foreign key (channelId) references Channel(id),
+primary key (userId,otherId,channelId)
 );
 
 create table Admins (
@@ -70,13 +81,15 @@ primary key (userId,channelId)
 );
 
 create table Message (
+messageId int AUTO_INCREMENT,
 userId int,
 messageTime DateTime,
 channelId int,
+messageContent nvarchar(500),
 -- serverId int,
 foreign key (userId) references User(id),
 foreign key (channelId) references Channel(id),
 -- foreign key (serverId) references Servers(id),
 -- primary key (messageTime,channelId,serverId)
-primary key (messageTime,channelId)
+primary key (messageId)
 );

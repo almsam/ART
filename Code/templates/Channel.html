@@ -8,16 +8,31 @@
 {% block header %}
 <h1>{{channel}}</h1>
 <h3>Logged in as: {{username}}</h3>
+<form action="/server">
+  <button id="goBack">Go Back to the Server Page</button>
+</form>
+<h1></h1>
 {% endblock %}
 
 {% block body %}
 <div id="chat-container">
-  <div id="messages"></div>
+  {% if chats|length > 0 %}
+    {% for messageId, chat in chats %}
+      <div>
+        <form action="/delete_message" method="POST">
+          <input type="hidden" id="messageId" name="messageId" value="{{messageId}}">
+          <input type="hidden" id="channel" name="channel" value="{{channel}}">
+          <button id="deleteMessage">Delete</button>
+          <p style="display:inline-block;">{{chat}}</p>
+        </form>
+      </div>
+    {% endfor %}
+  {% endif %}
 </div>
-<input type="text" id="message-box" placeholder="Type your message..." />
-<button id="send-button">Send</button>
-<form action="/server">
-  <button id="goBack">Go Back to the Server Page</button>
+<form action="/post_message" method="POST">
+  <input type="hidden" id="channel" name="channel" value="{{channel}}">
+  <input type="text" id="message-box" name="message-box" placeholder="Type your message..." required />
+  <button id="send-button">Send</button>
 </form>
 
 {% block check %}{% endblock %}
@@ -26,10 +41,10 @@
 {% if admins|length > 0 %}
     {% for admin in admins %}
       <form method="POST">
-        <p>{{admin}}</p>
+        <p style="display:inline-block;">{{admin}}</p>
         <input type="hidden" id="channel" name="channel" value="{{channel}}">
         <input type="hidden" id="user" name="user" value="{{admin}}">
-        <button id="kick" formaction="/kick">Kick User</button>
+        <button id="ban" formaction="/ban">Ban User</button>
         <button id="removeAdmin" formaction="/remove_admin">Unset as Admin</button>
       </form>
     {% endfor %}
@@ -37,42 +52,14 @@
 <h2>General Users:</h2>
 {% if users|length > 0 %}
     {% for user in users %}
-        <p>{{user}}</p>
         <form method="POST">
+          <p style="display:inline-block;">{{user}}</p>
           <input type="hidden" id="channel" name="channel" value="{{channel}}">
           <input type="hidden" id="user" name="user" value="{{user}}">
-          <button id="kick" formaction="/kick">Kick User</button>
+          <button id="ban" formaction="/ban">Ban User</button>
           <button id="addAdmin" formaction="/add_admin">Set as Admin</button>
         </form>
     {% endfor %}
 {% endif %}
-
-<script>
-  function sendMessage() {
-    var messageInput = document.getElementById("message-box");
-    var message = messageInput.value.trim();
-    if (message !== "") {
-      var messagesContainer = document.getElementById("messages");
-      var messageElement = document.createElement("div");
-      messageElement.textContent = message;
-      messagesContainer.appendChild(messageElement);
-      messageInput.value = "";
-
-      messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }
-  }
-
-  document
-    .getElementById("send-button")
-    .addEventListener("click", sendMessage);
-
-  document
-    .getElementById("message-box")
-    .addEventListener("keypress", function (event) {
-      if (event.keyCode === 13) {
-        sendMessage();
-      }
-    });
-</script>
 </body>
 {% endblock %}
