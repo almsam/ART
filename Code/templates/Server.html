@@ -40,6 +40,11 @@
             <input type="text" id="userToAdd" name="userToAdd" required>
             <button id="addUser" formaction="/add_user">Add User</button>
         </form>
+        <form method="POST">
+            <input type="hidden" id="channel" name="channel" value="{{channel}}">
+            <input type="text" id="newChannelName" name="newChannelName" required>
+            <button id="addUser" formaction="/rename_channel">Rename Channel</button>
+        </form>
     {% endfor %}
 {% endif %}
 

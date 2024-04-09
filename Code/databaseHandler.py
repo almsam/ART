@@ -262,7 +262,7 @@ class databaseHandler:
     
     #Renames a channel in the database
     def renameChannel(self, id: int, name: str):
-        if (self.Validator.auxValidateString(name)):
+        if (self.Validator.auxValidateString(name) and self.Validator.validateInt(id)):
             try:
                 ARTdb = self.openDatabaseConnection()
                 cursor = ARTdb.cursor()

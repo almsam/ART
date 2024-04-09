@@ -315,6 +315,33 @@ def leave_channel():
     channels = Connector.getYourChannels(currentUser.id)
     return render_template("ServerCheck.html", username=username, users=users, channels=channels, message=message)
 
+#Rename a channel that you own and update the channel list
+@server_bp.route("/rename_channel", methods=["POST"])
+def rename_channel():
+    if currentUser.id is None:
+        return redirect(url_for("login.login_page"))
+
+    username = Connector.getUserById(currentUser.id)[1]
+    users = Connector.getUsers()
+    channelName = request.form["channel"]
+    newChannelName = request.form["newChannelName"]
+    channelInfo = Connector.getChannelByName(channelName)
+
+    if channelInfo is None:
+        message = "Channel " + channelName + " does not exist."
+    elif newChannelName is None:
+        message = "Name not specified."
+    else:
+        adminStatus = Connector.getAdminById(currentUser.id, channelInfo[0])
+        if adminStatus is None:
+            message = "Cannot rename this channel as you are not an admin of this channel."
+        else:
+            Connector.renameChannel(channelInfo[0], newChannelName)
+            message = "Renamed channel to " + newChannelName + "."
+    
+    channels = Connector.getYourChannels(currentUser.id)
+    return render_template("ServerCheck.html", username=username, users=users, channels=channels, message=message)
+
 
 
 #---Profile and direct messaging pages---
