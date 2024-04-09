@@ -16,59 +16,50 @@ button {
     cursor: pointer;
 }
 
-
-button {
-    display: block;
-    margin: 10px auto;
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
-
-button:nth-of-type(1),
-button:nth-of-type(2) {
-    display: inline-block;
-    margin-left: 10px;
+h2 {
+    color:#5986f0;
+    margin-right: 10px; 
 }
-
-
-
-
-button:nth-of-type(4),
-button:nth-of-type(5) {
-    display: inline-block;
-    margin-left: 10px;
-}
-
-
-
-
-button:nth-of-type(3) {
-   
-    margin-left: 10px;
-}
-
-button:nth-of-type(6) {
-   
-    margin-left: 10px;
-}
-
-
-
 
 .icon {
     width: 40px;
     height: auto;
 }
 
-
-
-.container {
-    display: flex;
-    align-items: flex-start; 
-    margin: 0;
-    justify-content: center;
+button {
+    margin-left: 10px;
 }
 
-h2 {
-    color:#5986f0;
-    margin-right: 20px; 
+button:nth-of-type(6) {
+    display: inline-block;
+}
+
+
+button {
+    margin: 5px;
+}
+
+/* Ensure 2 buttons on one line */
+button:nth-of-type(1),
+button:nth-of-type(2) {
+    flex-basis: calc(50% - 10px); /* 50% minus margin */
+}
+
+/* Ensure 3 buttons on one line */
+button:nth-of-type(3),
+button:nth-of-type(4),
+button:nth-of-type(5) {
+    flex-basis: calc(33.33% - 10px); /* 33.33% minus margin */
+}
+
+/* Ensure 1 button on one line */
+button:nth-of-type(6) {
+    flex-basis: calc(100% - 10px); /* 100% minus margin */
 }
