@@ -50,3 +50,21 @@ button:nth-of-type(6) {
    
     margin-left: 10px;
 }
+
+
+
+
+.icon {
+    width: 40px;
+    height: auto;
+}
+
+
+
+.container {
+    display: flex;
+    align-items: flex-start; 
+    margin: 0;
+    justify-content: center;
+}
+
