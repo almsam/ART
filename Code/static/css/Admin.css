@@ -68,3 +68,7 @@ button:nth-of-type(6) {
     justify-content: center;
 }
 
+h2 {
+    color:#5986f0;
+    margin-right: 20px; 
+}
