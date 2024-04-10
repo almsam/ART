@@ -326,6 +326,7 @@ def rename_channel():
     channelName = request.form["channel"]
     newChannelName = request.form["newChannelName"]
     channelInfo = Connector.getChannelByName(channelName)
+    channels = Connector.getAllChannels()
 
     if channelInfo is None:
         message = "Channel " + channelName + " does not exist."
@@ -335,9 +336,11 @@ def rename_channel():
         adminStatus = Connector.getAdminById(currentUser.id, channelInfo[0])
         if adminStatus is None:
             message = "Cannot rename this channel as you are not an admin of this channel."
+        elif newChannelName in channels:
+            message = "Channel " + newChannelName + " already exists."
         else:
             Connector.renameChannel(channelInfo[0], newChannelName)
-            message = "Renamed channel to " + newChannelName + "."
+            message = "Renamed " + channelName + " to " + newChannelName + "."
     
     channels = Connector.getYourChannels(currentUser.id)
     return render_template("ServerCheck.html", username=username, users=users, channels=channels, message=message)
