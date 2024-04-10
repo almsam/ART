@@ -466,7 +466,7 @@ class databaseHandler:
             try:
                 ARTdb = self.openDatabaseConnection()
                 cursor = ARTdb.cursor()
-                query = "SELECT Message.messageId, User.username, Message.messageTime, Message.messageContent FROM User JOIN Message ON User.id = Message.userId WHERE channelId = %s"
+                query = "SELECT Message.messageId, User.username, Message.messageTime, Message.messageContent FROM User JOIN Message ON User.id = Message.userId WHERE channelId = %s ORDER BY Message.messageId"
                 cursor.execute(query, (channelId,))
 
                 for m in cursor:
