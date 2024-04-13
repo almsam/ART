@@ -195,7 +195,7 @@ if not getMessagesByChannelTest():
 
 def getMessageByIdTest():
     channelId = Connector.getChannelByName("testChannel")[0]
-    messageId = Connector.getMessagesByChannel(channelId)[0]
+    messageId = Connector.getMessagesByChannel(channelId)[0][0]
     return True if Connector.getMessageById(messageId) is not None else False
 if not getMessageByIdTest():
     print("getMessageByIdTest failed")
@@ -204,7 +204,7 @@ if not getMessageByIdTest():
 def deleteMessageTest():
     messagesBefore = Connector.countFromTable("Message")
     channelId = Connector.getChannelByName("testChannel")[0]
-    messageId = Connector.getMessagesByChannel(channelId)[0]
+    messageId = Connector.getMessagesByChannel(channelId)[0][0]
     if Connector.deleteMessage(messageId) == False:
         return False
     messagesAfter = Connector.countFromTable("Message")
@@ -212,26 +212,6 @@ def deleteMessageTest():
 if not deleteMessageTest():
     print("deleteMessageTest failed")
     failures += 1
-
-def createDMTest():
-    DMsBefore = Connector.countFromTable("Message")
-    userId = Connector.getUserByName("testName")[0]
-    channelId = Connector.getChannelByName("testChannel")[0]
-    if Connector.createDM(userId, userId, channelId) == False:
-        return False
-    DMsAfter = Connector.countFromTable("Message")
-    return DMsAfter[0] - DMsBefore[0] == 1
-if not createDMTest():
-    print("createDMTest failed")
-    failures += 1
-
-def getDMTest():
-    userId = Connector.getUserByName("testName")[0]
-    return True if Connector.getDM(userId, userId) is not None else False
-if not getDMTest():
-    print("getDMTest failed")
-    failures += 1
-    
 
 def removeUserFromChannelTest():
     membersBefore = Connector.countFromTable("ChannelMember")
@@ -253,6 +233,28 @@ def deleteChannelTest():
     return channelsAfter[0] - channelsBefore[0] == -1
 if not deleteChannelTest():
     print("deleteChannelTest failed")
+    failures += 1
+
+
+def createDMTest():
+    Connector.createUser("testName", "testPass", "test@test.com", "2000-01-01")
+    Connector.createChannel("testChannel", 1)
+    DMsBefore = Connector.countFromTable("DM")
+    userId = Connector.getUserByName("testName")[0]
+    channelId = Connector.getChannelByName("testChannel")[0]
+    if Connector.createDM(userId, userId, channelId) == False:
+        return False
+    DMsAfter = Connector.countFromTable("DM")
+    return DMsAfter[0] - DMsBefore[0] == 1
+if not createDMTest():
+    print("createDMTest failed")
+    failures += 1
+
+def getDMTest():
+    userId = Connector.getUserByName("testName")[0]
+    return True if Connector.getDM(userId, userId) is not None else False
+if not getDMTest():
+    print("getDMTest failed")
     failures += 1
 
 
