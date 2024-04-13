@@ -16,6 +16,27 @@ class databaseHandler:
         )
         return ARTdb
     
+    #Returns the number of rows in a given table
+    def countFromTable(self, table: str):
+        if (self.Validator.auxValidateString(table)):
+            count = None
+            try:
+                ARTdb = self.openDatabaseConnection()
+                cursor = ARTdb.cursor()
+                query = "SELECT COUNT(*) from " + table
+                cursor.execute(query)
+
+                for c in cursor:
+                    count = c
+
+                cursor.close()
+            except mysql.connector.Error as err:
+                print(err)
+            finally:
+                ARTdb.close()
+                return count
+        return None
+    
     #Returns a list of the usernames of all users in the database in alphabetical order
     def getUsers(self):
         users = []
