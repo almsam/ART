@@ -27,7 +27,7 @@
   ### Built By [**Sami Almuallim**](https://github.com/almsam/), [**Abhishek Dash**](https://github.com/adash02), & [**Muhammad Ashar**](https://github.com/MASHAR27), Using:
  - [![html][html]][html-url] & [![CSS][CSS]][CSS-url] for front end,
  - [![Py][Py]][PyUrl] with [![Flask][Flask]][Flask-Url] for back end,
- - And [![Docker][Docker]][Docker-url] & [![MySQL][MySQL]][MySQL-url] 
+ - And [![Docker][Docker]][Docker-url] & [![MySQL][MySQL]][MySQL-url] for the DB
 
 
 [CSS]: https://img.shields.io/badge/CSS-%20%231572B6?logo=css3&logoColor=FFFFFF
