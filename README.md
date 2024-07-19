@@ -24,21 +24,26 @@
 
   During my third year of undergrad, My group of 5 was tasked with building a full application (with front end & back end) to demonstrate our abilities to implement good software engineering practices. Frankly: this project fell far from my expectations & was far from my finest work, but I still feel publically archiving my dumpsterfire will do me well in showing anyone on this repo how much progress I have made in this adventure of learning to code & the lessons I have learnt along the way.
 
-  ### Built By [**Sami Almuallim**](https://github.com/almsam/), [**Abhishek Dash**](https://github.com/adash02), & [**Muhammad Ashar**](https://github.com/MASHAR27)
+  ### Built By [**Sami Almuallim**](https://github.com/almsam/), [**Abhishek Dash**](https://github.com/adash02), & [**Muhammad Ashar**](https://github.com/MASHAR27), Using:
+ - [![html][html]][html-url] & [![CSS][CSS]][CSS-url] for front end,
+ - [![Py][Py]][PyUrl] with [![Flask][Flask]][Flask-Url] for back end,
+ - And [![Docker][Docker]][Docker-url] & [![MySQL][MySQL]][MySQL-url] 
 
-   With: [![Docker][Docker]][Docker-url] [![JS][JS]][JS-url] [![CSS][CSS]][CSS-url]  & [![MySQL][MySQL]][MySQL-url]
 
-[JS]: https://img.shields.io/badge/JavaScript%20-%20%23F7DF1E?logo=javascript&logoColor=FFFFFF
-[JS-url]: https://www.javascript.com
 [CSS]: https://img.shields.io/badge/CSS-%20%231572B6?logo=css3&logoColor=FFFFFF
 [CSS-url]: https://css3.com
+[html]: https://img.shields.io/badge/HTML5%20-%20%23E34F26?logo=html5&logoColor=FFFFFF&logoSize=auto
+[html-url]: https://github.com/whatwg/html
+
 [Docker]: https://img.shields.io/badge/Docker%20-%20%232496ED?logo=docker&logoColor=FFFFFF
 [Docker-url]: https://www.docker.com
 [MySQL]: https://img.shields.io/badge/MySQL%20-%20%23f79838?logo=mysql&logoColor=%23FFFFFF&logoSize=auto
 [MySQL-url]: https://www.mysql.com
 
-
-
+[Py]: https://img.shields.io/badge/Python%20-%20%233e50b5?logo=python&logoColor=%23FFDE57&logoSize=auto
+[PyUrl]: https://www.python.org
+[Flask]: https://img.shields.io/badge/Flask%20-%20%23000000?logo=flask&logoColor=%23FFFFFF&logoSize=auto
+[Flask-Url]: https://flask.palletsprojects.com/en/3.0.x/
 
 
 <!-- SUMMARY -->
