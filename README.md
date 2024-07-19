@@ -24,8 +24,19 @@
 
   During my third year of undergrad, My group of 5 was tasked with building a full application (with front end & back end) to demonstrate our abilities to implement good software engineering practices. Frankly: this project fell far from my expectations & was far from my finest work, but I still feel publically archiving my dumpsterfire will do me well in showing anyone on this repo how much progress I have made in this adventure of learning to code & the lessons I have learnt along the way.
 
-  ### Built By [**Sami Almuallim**](https://github.com/almsam/), [**Muhammad Ashar**](https://github.com/MASHAR27), [**Abhishek Dash
-**](https://github.com/adash02), & [**Nicholas Marino**]
+  ### Built By [**Sami Almuallim**](https://github.com/almsam/), [**Muhammad Ashar**](https://github.com/MASHAR27), [**Abhishek Dash**](https://github.com/adash02), & [**Nicholas Marino**]
+
+   With: [![Docker][Docker]][Docker-url] [![JS][JS]][JS-url] [![CSS][CSS]][CSS-url]  & [![MySQL][MySQL]][MySQL-url]
+
+[JS]: https://img.shields.io/badge/JavaScript%20-%20%23F7DF1E?logo=javascript&logoColor=FFFFFF
+[JS-url]: https://www.javascript.com
+[CSS]: https://img.shields.io/badge/CSS-%20%231572B6?logo=css3&logoColor=FFFFFF
+[CSS-url]: https://css3.com
+[Docker]: https://img.shields.io/badge/Docker%20-%20%232496ED?logo=docker&logoColor=FFFFFF
+[Docker-url]: https://www.docker.com
+[MySQL]: https://img.shields.io/badge/MySQL%20-%20%23f79838?logo=mysql&logoColor=%23FFFFFF&logoSize=auto
+[MySQL-url]: https://www.mysql.com
+
 
 
 
