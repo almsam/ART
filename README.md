@@ -24,3 +24,26 @@
 
 
 ## Executive Summary
+Our Discord clone aimed to deliver a comprehensive messaging system where users could join servers, send and receive messages, & manage communication efficiently. With features like server and channel management, DM's, file sharing, & real-time notifications, our platform ensures an engaging user experience. Developed in Flask for Python with a focus on functionality, this project worked well with demonstrating the importance of robhust engineering practcies.
+
+## Features
+
+### Main Page
+- **Search for servers and channels** from the root page `/` and the main server directory `/listservers`.
+- By default, all servers are listed on `/listservers`.
+- Most pages have a navigation bar fixed to the top which lists the username of the current user.
+
+### Messaging System
+- **Servers and Channels**
+  - Join servers and access text and voice channels.
+  - Create and manage servers, including user roles and permissions.
+  - Create, edit, and delete channels within servers (if admin permissions exist).
+  - Add server icons and search for servers and channels.
+  - Generate invite links for servers and channels.
+- **Direct Messaging and Friend System**
+  - Send and receive direct messages with friends, regardless of shared servers.
+  - Send and accept friend requests.
+  - View mutual servers of friends.
+  - Send files, images, and react to messages using emojis.
+- **Notification System**
+  - Implement push notifications for new messages and activities.
