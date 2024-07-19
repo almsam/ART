@@ -22,9 +22,12 @@
 
 </div>
 
+<!-- SUMMARY -->
 
 ## Executive Summary
 Our Discord clone aimed to deliver a comprehensive messaging system where users could join servers, send and receive messages, & manage communication efficiently. With features like server and channel management, DM's, file sharing, & real-time notifications, our platform ensures an engaging user experience. Developed in Flask for Python with a focus on functionality, this project worked well with demonstrating the importance of robhust engineering practcies.
+
+<!-- FEATURES -->
 
 ## Features
 
@@ -47,3 +50,17 @@ Our Discord clone aimed to deliver a comprehensive messaging system where users 
   - Send files, images, and react to messages using emojis.
 - **Notification System**
   - Implement push notifications for new messages and activities.
+ 
+### User Accounts
+- **Profile Management**
+  - Register new users with HTML client-side validation and database constraints.
+  - Update user profile, including avatar, username, email, and password.
+  - Manage public and private information, including two-factor authentication.
+  - View and manage all orders for admin users.
+
+### Admin Portal
+- **Server and User Management**
+  - Manage server settings, roles, permissions, and invites.
+  - Mute, ban, and manage users within servers.
+  - Delete messages and manage server content.
+  - Add photos to products and servers using AJAX.
