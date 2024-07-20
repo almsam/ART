@@ -5,8 +5,8 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/almsam/data-analysis-project-revisited">
-    <img src="public/img/minerals logo.png" alt="Logo" width="180" height="180">
+  <a href="https://github.com/almsam/ART">
+    <img src="Images/ART logo.png" alt="Logo" width="180" height="180">
   </a>
 
 <h3 align="center">Discord Clone Software Engineering Project</h3>
