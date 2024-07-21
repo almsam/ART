@@ -9,7 +9,11 @@
     <img src="Images/ART logo.png" alt="Logo" width="180" height="180">
   </a>
 
-<h3 align="center">Discord Clone Software Engineering Project</h3>
+</div>
+
+<div align="center">
+
+<h1 align="center">Discord Clone Software Engineering Project</h1>
 
 <p align="center">
   <strong>Mission Statement</strong><br>
